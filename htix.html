@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><script src="/.well-known/figma/preview.js" blocking="render"></script>
+  <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+  <script type="module" src="/@vite/client"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>PIXEL PET · 像素随身宠物（交互设计完整版 v3.0）</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  :root{
+    --bg:#d7eef0;--bg2:#d8edf0;--panel:#e9e5d4;--panel2:#d5d0bc;--panel3:#6f8290;
+    --ink:#414b50;--accent:#e5bd58;--green:#86b98e;--red:#c66f78;--blue:#8ab9c5;
+    --muted:#78898d;--purple:#a99ac0;--gold:#e5bd58;--line:#53656a;
+    --pixel-font:"Courier New",monospace;
+  }
+  html,body{height:100%;}
+  body{
+    font-family:var(--pixel-font);
+    background:#b9dadd;
+    color:#46565a;
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:12px;
+    background-image:linear-gradient(180deg,#c9e6e9,#9ebfc4 65%,#839fa4);
+  }
+
+  /* 掌机外壳 */
+  .phone{
+    width:396px;height:836px;max-height:96vh;
+    background:#e7e4d5;
+    border:7px solid #5d6464;border-radius:28px;
+    position:relative;overflow:hidden;
+    display:flex;flex-direction:column;
+    box-shadow:0 0 0 3px #b7c4c0,0 18px 45px #526c7080;
+  }
+  /* 复古扫描线纹理 */
+  .phone::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:500;
+    opacity:.14;
+    background:repeating-linear-gradient(0deg,rgba(38,52,53,.12) 0 1px,transparent 1px 4px);
+  }
+
+  /* 顶部状态栏 */
+  .topbar{
+    padding:8px 10px;display:flex;justify-content:space-between;align-items:center;
+    font-size:11px;background:#62576e;color:#f5e8d2;
+    border-bottom:3px solid #3d4650;flex-shrink:0;position:relative;z-index:20;
+  }
+  .topbar .brand{font-weight:bold;letter-spacing:1px;color:#fff0c9;text-shadow:1px 2px #3c3b4c;cursor:pointer;}
+  .top-stats{display:flex;gap:7px;align-items:center;color:#f8edcf;}
+  .top-stats b{color:#fff1c7;}
+  .ia-nav-btn{
+    padding:3px 6px;background:#ecd18a;color:#4f4124;
+    border:2px solid #3d4650;border-radius:4px;
+    font-family:var(--pixel-font);font-size:10px;font-weight:bold;
+    cursor:pointer;box-shadow:0 2px 0 #3d4650;
+  }
+  .ia-nav-btn:active{transform:translateY(1px);box-shadow:0 1px 0 #3d4650;}
+
+  /* 主内容滚动区 */
+  .screen{flex:1;overflow-y:auto;padding:10px 12px;background:#d9edf0;scrollbar-width:none;position:relative;}
+  .screen::-webkit-scrollbar{display:none;}
+  .view{display:none;animation:fade .2s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
+
+  /* 全屏子页面 */
+  .fullpage{
+    position:absolute;inset:0;background:#d9edf0;z-index:150;
+    display:none;flex-direction:column;
+  }
+  .fullpage.show{display:flex;animation:fade .18s ease;}
+  .fp-header{
+    padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+    border-bottom:3px solid #48565b;background:#675b70;color:#fff4dc;
+    flex-shrink:0;position:relative;z-index:10;
+  }
+  .fp-header-left{display:flex;align-items:center;gap:8px;}
+  .fp-back{font-size:18px;cursor:pointer;color:#f5dfa1;padding:0 6px;font-weight:bold;}
+  .fp-back:active{transform:scale(.9);}
+  .fp-title{font-size:13px;letter-spacing:1px;text-shadow:1px 1px #45404d;}
+  .fp-badge{font-size:9px;background:#483e52;color:#f5dfa1;padding:2px 6px;border-radius:4px;border:1px solid #8c7a96;}
+  .fp-body{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+  .fp-body::-webkit-scrollbar{display:none;}
+
+  /* 界面01：开机启动页 */
+  #page-splash{z-index:300;background:linear-gradient(180deg,#bfe5eb 0%,#8ec2cc 65%,#649ea8 100%);}
+  .splash-inner{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+    padding:34px 20px 26px;text-align:center;position:relative;overflow:hidden;
+  }
+  .splash-logo-box{
+    background:#f0eddf;border:3px solid #53656a;border-radius:10px;
+    padding:16px 20px;box-shadow:0 5px 0 #53656a;position:relative;z-index:2;width:100%;
+  }
+  .splash-sub{font-size:10px;color:#78898d;letter-spacing:2px;margin-bottom:6px;}
+  .splash-title{font-size:26px;font-weight:bold;color:#4f5e63;letter-spacing:3px;text-shadow:2px 2px #d5d0bc;}
+  .splash-tag{display:inline-block;margin-top:8px;padding:3px 10px;background:#675b70;color:#fff0c9;font-size:10px;border-radius:4px;}
+  .splash-pet-box{position:relative;z-index:2;margin:10px 0;}
+  .splash-canvas{width:132px;height:132px;image-rendering:pixelated;animation:bob 2s steps(4,end) infinite;filter:drop-shadow(0 6px 0 rgba(60,90,95,.35));}
+  .splash-actions{width:100%;display:flex;flex-direction:column;gap:10px;position:relative;z-index:2;}
+
+  /* 场景切换栏 */
+  .scene-switch{display:flex;gap:5px;margin:0 0 7px;}
+  .scene-choice{
+    flex:1;padding:6px 2px;border:2px solid #7f9696;border-radius:4px;
+    background:#e9e5d5;color:#65787a;font:10px var(--pixel-font);
+    cursor:pointer;box-shadow:0 2px 0 #7f9696;font-weight:bold;
+  }
+  .scene-choice.active{
+    background:#7e9e9d;color:#fff8e8;border-color:#536c70;
+    transform:translateY(1px);box-shadow:0 1px 0 #536c70;
+  }
+
+  /* 宠物主舞台 */
+  .stage{
+    height:272px;padding:0 12px 14px;border:3px solid #647b7d;border-radius:5px;
+    box-shadow:0 3px 0 #647b7d;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-end;position:relative;overflow:hidden;image-rendering:pixelated;
+    background-color:#a9d4dc;
+    background-image:linear-gradient(180deg,#bfe5eb 0 48%,#9ac8d1 49% 66%,#6eabb6 67% 100%);
+  }
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 46%,#fff9dc 0 10%,transparent 11%),
+               linear-gradient(180deg,transparent 0 46%,#e8f1e8 47% 49%,transparent 50%);
+    opacity:.45;
+  }
+  .stage::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:22%;
+    background:repeating-linear-gradient(175deg,#6daeb8 0 5px,#83bdc4 5px 9px,#5798a5 9px 13px);
+    border-top:3px solid #e3e5cf;opacity:.9;
+  }
+  /* 舞台顶部经验与快捷信息 */
+  .stage-hud{
+    position:absolute;top:8px;left:8px;right:8px;z-index:5;
+    display:flex;justify-content:space-between;align-items:center;gap:6px;
+  }
+  .exp-pill{
+    background:rgba(240,237,223,.92);border:2px solid #647b7d;border-radius:4px;
+    padding:3px 7px;font-size:9px;color:#46565a;font-weight:bold;display:flex;align-items:center;gap:5px;
+  }
+  .exp-mini-bar{width:46px;height:6px;background:#c1c8bd;border:1px solid #53656a;overflow:hidden;}
+  .exp-mini-fill{height:100%;background:#e5bd58;transition:width .3s;}
+  .stage-skill-btn{
+    background:#675b70;color:#fff4dc;border:2px solid #3d4650;border-radius:4px;
+    padding:3px 7px;font-size:9px;font-family:var(--pixel-font);font-weight:bold;cursor:pointer;
+  }
+
+  /* 宠物对话气泡 */
+  .speech-bubble{
+    position:absolute;top:38px;z-index:8;
+    background:#fffaf0;color:#46565a;border:2px solid #53656a;border-radius:6px;
+    padding:4px 9px;font-size:10px;font-weight:bold;box-shadow:0 2px 0 #53656a;
+    opacity:0;transform:translateY(4px);transition:.2s;pointer-events:none;max-width:85%;text-align:center;
+  }
+  .speech-bubble.show{opacity:1;transform:translateY(0);}
+
+  .star{position:absolute;width:4px;height:4px;background:#fff;opacity:.6;animation:floatStar 6s linear infinite;z-index:1;pointer-events:none;}
+  @keyframes floatStar{0%{transform:translateY(0);opacity:0;}20%{opacity:.8;}100%{transform:translateY(-80px);opacity:0;}}
+  .pet-wrap{position:relative;z-index:3;display:inline-block;}
+  .pet-canvas{width:108px;height:108px;image-rendering:pixelated;filter:drop-shadow(0 5px 0 #52777b66);animation:bob 2.2s steps(4,end) infinite;cursor:pointer;display:block;}
+  .pet-canvas:active{transform:scale(.92);}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  .pet-name{font-size:13px;margin-top:4px;position:relative;z-index:3;color:#fff9e9;text-shadow:2px 2px #53676a;letter-spacing:1px;font-weight:bold;}
+  .mood-tag{display:inline-block;font-size:10px;padding:2px 9px;margin-top:4px;background:#f0e7d1;color:#687b78;border:2px solid #879d96;border-radius:3px;position:relative;z-index:3;}
+
+  /* 飘浮爱心动画 */
+  .float-heart{
+    position:absolute;z-index:20;pointer-events:none;font-size:16px;
+    animation:heartUp 1s ease-out forwards;text-shadow:1px 1px 0 #53656a;
+  }
+  @keyframes heartUp{
+    0%{opacity:1;transform:translate(-50%,0) scale(0.8);}
+    50%{opacity:1;transform:translate(-50%,-28px) scale(1.15);}
+    100%{opacity:0;transform:translate(-50%,-52px) scale(0.9);}
+  }
+
+  /* 场景装饰 */
+  .scene-cloud{position:absolute;z-index:1;width:66px;height:16px;background:#eff1e5;box-shadow:10px -8px 0 -2px #eff1e5,25px -3px 0 0 #eff1e5,42px 2px 0 -3px #eff1e5;opacity:.95;pointer-events:none;}
+  .cloud-a{top:44px;left:20px}.cloud-b{top:74px;right:20px;transform:scale(.7)}
+  .scene-lighthouse{position:absolute;z-index:1;left:18px;bottom:58px;width:25px;height:82px;background:repeating-linear-gradient(180deg,#f4eee0 0 15px,#bd7770 15px 23px);border:3px solid #7a7770;clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);pointer-events:none;}
+  .scene-lighthouse:before{content:"";position:absolute;top:-12px;left:3px;width:15px;height:12px;background:#b66e69;border:2px solid #6c7773}
+  .scene-rock{position:absolute;z-index:1;bottom:54px;background:#9a9a8b;border:3px solid #74827d;clip-path:polygon(0 100%,12% 35%,38% 0,72% 20%,100% 100%);pointer-events:none;}
+  .rock-a{right:-5px;width:78px;height:74px}.rock-b{left:-9px;width:62px;height:48px;opacity:.8}
+  .stage.scene-room{background-image:linear-gradient(90deg,#59666b 0 13%,transparent 13% 87%,#59666b 87%),linear-gradient(180deg,#75838a 0 62%,#9d5969 62% 100%)}
+  .stage.scene-room::after{height:25%;background:repeating-linear-gradient(90deg,#a65f70 0 34px,#b56d7a 34px 38px);border-color:#594c55}
+  .scene-room .scene-lighthouse{left:auto;right:28px;bottom:66px;width:70px;height:70px;clip-path:none;background:#786b60;border:4px solid #4f5352}
+  .scene-room .scene-lighthouse:before{content:"▣";font-size:32px;color:#d7e4dc;top:12px;left:14px;background:transparent;border:0}
+  .stage.scene-night{background-image:radial-gradient(circle at 70% 34%,#fff1c5 0 26px,transparent 27px),linear-gradient(180deg,#68718d 0,#414e70 65%,#303d5a 66%)}
+  .stage.scene-night::after{background:repeating-linear-gradient(175deg,#485b78 0 6px,#536987 6px 10px);border-color:#a2a9a0}
+  .scene-night .scene-cloud{background:#b4bbc0;box-shadow:10px -8px 0 -2px #b4bbc0,25px -3px 0 0 #b4bbc0,42px 2px 0 -3px #b4bbc0}
+  .stage.scene-cave{background-image:radial-gradient(ellipse at 50% 45%,#8aa5a2 0 5%,transparent 6%),linear-gradient(180deg,#56646c,#303e48 65%,#596a68)}
+  .stage.scene-cave::after{background:repeating-linear-gradient(175deg,#536e68 0 6px,#405a56 6px 11px);border-color:#88968a}
+  .scene-cave .scene-lighthouse{height:102px;background:#45515a;border-color:#2d3b43}
+  .scene-cave .scene-cloud{background:#859a99;box-shadow:10px -8px 0 -2px #859a99,25px -3px 0 0 #859a99,42px 2px 0 -3px #859a99}
+
+  /* 状态条 */
+  .bars{margin-top:8px;display:flex;flex-direction:column;gap:6px;}
+  .bar-row{display:flex;align-items:center;gap:8px;font-size:11px;}
+  .bar-label{width:46px;color:#5a6b6e;flex-shrink:0;font-weight:bold;}
+  .bar-track{flex:1;height:14px;background:#c1c8bd;border:2px solid #6f8181;border-radius:2px;overflow:hidden;position:relative;}
+  .bar-fill{height:100%;transition:width .35s ease;}
+  .hunger .bar-fill{background:#e6c46b;}
+  .mood .bar-fill{background:#85b8be;}
+  .hp-mini .bar-fill{background:#c66f78;}
+  .bar-val{width:42px;text-align:right;color:#5a6b6e;flex-shrink:0;font-size:10px;}
+
+  /* 卡片与按钮 */
+  .card,.shop-item,.setting-row,.task-item,.prep-card{
+    background:#f0eddf;border:2px solid #899b9a;border-radius:7px;
+    padding:10px;margin-top:9px;box-shadow:0 3px 0 #899b9a;color:#536266;
+  }
+  .card h3{font-size:11px;color:#736661;font-weight:bold;margin-bottom:7px;letter-spacing:1px;}
+  .steps-row{display:flex;align-items:baseline;justify-content:space-between;}
+  .steps-num{font-size:26px;color:#5d7477;font-weight:bold;}
+  .steps-unit{font-size:10px;color:#78898d;}
+  input[type=range]{width:100%;margin-top:6px;accent-color:#675b70;height:6px;}
+
+  .btn,.buy-btn,.map-controls button{
+    border:2px solid #526468;border-radius:5px;box-shadow:0 3px 0 #526468;
+    font-family:var(--pixel-font);font-weight:bold;cursor:pointer;transition:transform .05s;
+  }
+  .btn{
+    width:100%;padding:9px;background:#a8c9bd;color:#314c4a;font-size:12px;margin-top:7px;
+  }
+  .btn:active,.buy-btn:active,.map-controls button:active{transform:translateY(2px);box-shadow:0 1px 0 #526468;}
+  .btn:disabled,.buy-btn:disabled{background:#cfd4cd;color:#8b9490;border-color:#96a19e;box-shadow:0 3px 0 #96a19e;cursor:not-allowed;}
+  .btn.blue{background:#a8cbd2;color:#36545a;}
+  .btn.red{background:#d79a91;color:#563c42;}
+  .btn.purple{background:#b9accb;color:#51445d;}
+  .btn.gold,.buy-btn{background:#ecd18a;color:#5e5031;}
+  .btn.ghost{background:#e9e5d5;color:#68787a;border-color:#91a3a0;box-shadow:0 3px 0 #91a3a0;}
+  .btn.filter-active{background:#675b70;color:#fff4dc;border-color:#3d4650;box-shadow:0 2px 0 #3d4650;}
+  .btn.sm{padding:5px 8px;font-size:10px;margin-top:0;}
+
+  /* 底部导航栏 */
+  .tabbar{
+    display:flex;border-top:3px solid #3f4850;background:#675b70;
+    flex-shrink:0;position:relative;z-index:20;
+  }
+  .tab{
+    flex:1;padding:7px 0 8px;text-align:center;cursor:pointer;font-size:10px;
+    color:#e8dfcf;display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .tab .ico{font-size:17px;line-height:1;}
+  .tab.active{background:#9a8290;color:#fff8e8;}
+
+  /* 网格与列表项 */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+  .item{
+    background:#f0eddf;border:2px solid #899b9a;border-radius:7px;aspect-ratio:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-size:10px;color:#536266;cursor:pointer;position:relative;padding:4px;
+    box-shadow:0 3px 0 #899b9a;overflow:hidden;
+  }
+  .item:active{transform:translateY(2px);box-shadow:0 1px 0 #899b9a;}
+  .item .emoji{font-size:24px;}
+  .item .count{position:absolute;top:3px;right:4px;font-size:8px;color:#5e5031;background:#ecd18a;padding:1px 4px;border-radius:3px;border:1px solid #899b9a;}
+  .item .elem-badge{position:absolute;top:3px;left:4px;font-size:8px;padding:1px 4px;border-radius:3px;color:#fff;font-weight:bold;}
+  .item.use{border-color:#5b8c6b;}
+  .item.owned{border-color:#647b7d;}
+  .item.locked{opacity:.68;background:#e1ded0;}
+  .item .lv{position:absolute;bottom:3px;right:4px;font-size:8px;color:#4f7a5d;font-weight:bold;}
+  .item.rarity-rare{border-color:#4b89b8;box-shadow:0 3px 0 #4b89b8;}
+  .item.rarity-epic{border-color:#d49b27;box-shadow:0 3px 0 #d49b27;}
+
+  /* 技能栏系统样式 */
+  .skill-slots-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;}
+  .skill-slot{
+    background:#e9e5d5;border:2px dashed #7f9696;border-radius:6px;padding:6px 4px;
+    text-align:center;font-size:9px;min-height:54px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:2px;cursor:pointer;
+  }
+  .skill-slot.equipped{
+    border-style:solid;border-color:#62576e;background:#f7f4e8;box-shadow:0 2px 0 #62576e;
+  }
+  .skill-card{
+    background:#f5f2e6;border:2px solid #899b9a;border-radius:6px;padding:8px;
+    margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+  .skill-card.equipped{border-color:#5b8c6b;background:#ebf4ec;}
+  .skill-card.locked{opacity:.6;background:#e2dfd2;}
+  .skill-tag{
+    display:inline-block;font-size:8px;padding:1px 5px;border-radius:3px;
+    color:#fff;font-weight:bold;margin-right:4px;
+  }
+
+  /* 竞技场技能按钮网格 */
+  .battle-actions-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%;margin-top:8px;
+  }
+  .skill-battle-btn{
+    padding:7px 6px;border:2px solid #526468;border-radius:5px;box-shadow:0 2px 0 #526468;
+    font-family:var(--pixel-font);font-size:10px;font-weight:bold;cursor:pointer;
+    background:#f0eddf;color:#3d4c4f;text-align:left;position:relative;overflow:hidden;
+  }
+  .skill-battle-btn:active{transform:translateY(1px);box-shadow:0 1px 0 #526468;}
+  .skill-battle-btn:disabled{
+    background:#cfd4cd;color:#8b9490;border-color:#96a19e;box-shadow:0 2px 0 #96a19e;cursor:not-allowed;
+  }
+  .skill-battle-btn .sb-top{display:flex;justify-content:space-between;align-items:center;}
+  .skill-battle-btn .sb-sub{font-size:8px;color:#68787a;margin-top:2px;font-weight:normal;}
+
+  .shop-item{display:flex;align-items:center;gap:10px;margin-top:0;margin-bottom:8px;}
+  .shop-item .emoji{font-size:28px;}
+  .shop-item .info{flex:1;}
+  .shop-item .info .t{font-size:12px;font-weight:bold;}
+  .shop-item .info .d{font-size:10px;color:#78898d;margin-top:2px;}
+  .buy-btn{padding:7px 10px;font-size:11px;flex-shrink:0;}
+
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:11px;margin-top:0;margin-bottom:8px;font-size:11px;}
+  .switch{width:44px;height:24px;background:#b7c0ba;border-radius:12px;position:relative;cursor:pointer;flex-shrink:0;border:2px solid #53656a;}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;background:#f0eddf;border-radius:50%;transition:.2s;border:1px solid #53656a;}
+  .switch.on{background:#86b98e;}
+  .switch.on::after{left:22px;background:#fff;}
+
+  .toast{
+    position:absolute;left:50%;bottom:74px;transform:translateX(-50%) translateY(10px);
+    background:#f1e8d4;color:#525042;font-size:11px;font-weight:bold;padding:8px 14px;border-radius:6px;
+    opacity:0;pointer-events:none;transition:.2s;white-space:nowrap;z-index:600;
+    border:2px solid #667c78;box-shadow:0 3px 0 #667c78;max-width:92%;overflow:hidden;text-overflow:ellipsis;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .section-title{font-size:12px;font-weight:bold;margin:2px 0 8px;color:#5a666b;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  .hint{font-size:10px;color:#75878a;margin-top:6px;line-height:1.5;}
+
+  /* 地图 */
+  #fakeMapWrap{width:100%;border:3px solid #647b7d;border-radius:5px;overflow:hidden;box-shadow:0 3px 0 #647b7d;position:relative;background:#2f7a2f;}
+  #fakeMap{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer;}
+  .map-legend{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:4px;font-size:9px;color:#536266;background:#f0eddf;border:2px solid #899b9a;border-radius:4px;padding:3px 6px;}
+  .legend-dot{width:9px;height:9px;border-radius:2px;border:1px solid #53656a;}
+  .map-controls{display:flex;gap:8px;margin-top:8px;}
+  .map-controls button{flex:1;padding:9px;background:#a8cbd2;color:#36545a;font-size:11px;}
+
+  /* 进化 */
+  .evo-stage{
+    background:radial-gradient(circle,#b8dfe2,#617c8a);
+    border:3px solid #647b7d;border-radius:6px;padding:18px;text-align:center;
+    position:relative;overflow:hidden;box-shadow:0 3px 0 #647b7d;min-height:260px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .evo-pet-big{width:96px;height:96px;image-rendering:pixelated;animation:bob 1.6s steps(4,end) infinite;}
+  .evo-pet-big.evolving{animation:evoShake .2s infinite;}
+  @keyframes evoShake{0%,100%{transform:translateX(0) scale(1);}25%{transform:translateX(-5px) scale(1.06);}75%{transform:translateX(5px) scale(1.06);}}
+  .evo-arrow{font-size:20px;color:#fff8e8;margin:6px 0;text-shadow:1px 1px #46565a;}
+  .evo-stats{display:flex;gap:6px;justify-content:center;margin-top:10px;font-size:10px;flex-wrap:wrap;}
+  .evo-stats div{background:#f0eddf;border:2px solid #647b7d;border-radius:5px;padding:5px 8px;color:#536266;}
+  .evo-stats div span{color:#b56e35;font-weight:bold;}
+  .evo-particle{position:absolute;width:6px;height:6px;background:#ffcd75;border:1px solid #53656a;pointer-events:none;z-index:10;}
+
+  /* 详情 */
+  .detail-stage{background:linear-gradient(180deg,#b8dfe2,#75aab4);border:3px solid #647b7d;border-radius:6px;padding:16px;text-align:center;position:relative;overflow:hidden;box-shadow:0 3px 0 #647b7d;}
+  .detail-stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:26%;background:#86b98e;border-top:3px solid #647b7d;}
+  .detail-canvas{width:104px;height:104px;image-rendering:pixelated;position:relative;z-index:2;animation:bob 1.8s steps(4,end) infinite;display:inline-block;}
+  .stat-row{display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px dashed #b9c2bc;}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .k{color:#75878a;}
+  .stat-row .v{color:#4d6266;font-weight:bold;}
+
+  /* 准备 & 蛋 & 任务 */
+  .prep-card{margin-top:0;margin-bottom:10px;}
+  .prep-card .t{font-size:11px;color:#736661;font-weight:bold;margin-bottom:8px;}
+  .pet-option{display:flex;align-items:center;gap:8px;padding:8px;border:2px solid #96a6a3;border-radius:6px;margin-bottom:6px;cursor:pointer;font-size:11px;background:#e9e5d5;}
+  .pet-option.selected{border-color:#675b70;background:#dfd7e3;font-weight:bold;}
+  .pet-option canvas{width:34px;height:34px;image-rendering:pixelated;}
+
+  .egg-stage{background:linear-gradient(180deg,#b8dfe2,#75aab4);border:3px solid #647b7d;border-radius:6px;padding:24px 16px;text-align:center;position:relative;overflow:hidden;box-shadow:0 3px 0 #647b7d;}
+  .egg{font-size:64px;animation:eggWobble 1.4s ease-in-out infinite;display:inline-block;}
+  @keyframes eggWobble{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(7deg);}}
+
+  .task-item{display:flex;align-items:center;gap:8px;padding:10px;margin-top:0;margin-bottom:8px;}
+  .task-item.done{opacity:.85;}
+  .task-item .check{width:22px;height:22px;border:2px solid #75878a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:#e9e5d5;}
+  .task-item.done .check{background:#86b98e;border-color:#4d7354;color:#fff;font-weight:bold;}
+  .task-item .info{flex:1;}
+  .task-item .info .t{font-size:11px;font-weight:bold;}
+  .task-item .info .p{font-size:9px;color:#75878a;margin-top:2px;}
+  .task-item .reward{font-size:10px;color:#5e5031;background:#ecd18a;padding:3px 6px;border-radius:4px;border:1px solid #899b9a;flex-shrink:0;font-weight:bold;}
+
+  /* 弹窗 */
+  .modal{position:absolute;inset:0;background:rgba(45,58,61,.75);z-index:400;display:none;align-items:center;justify-content:center;padding:18px;}
+  .modal.show{display:flex;animation:fade .15s ease;}
+  .modal-box{background:#eee9d9;border:3px solid #647b7d;border-radius:10px;padding:16px;width:100%;max-width:336px;box-shadow:0 5px 0 #53656a;position:relative;color:#46565a;max-height:85vh;overflow-y:auto;}
+  .modal-title{font-size:13px;font-weight:bold;color:#5c5263;margin-bottom:10px;text-align:center;letter-spacing:1px;}
+  .modal-close{position:absolute;top:8px;right:12px;font-size:18px;color:#75878a;cursor:pointer;line-height:1;font-weight:bold;}
+  .rename-input{width:100%;padding:9px;background:#fffaf0;border:2px solid #718583;border-radius:5px;color:#46565a;font-family:var(--pixel-font);font-size:13px;text-align:center;margin-bottom:10px;outline:none;}
+
+  /* 进度条 */
+  .progress{height:18px;background:#c1c8bd;border:2px solid #647b7d;border-radius:3px;overflow:hidden;position:relative;margin-top:6px;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#86b98e,#e5bd58);transition:width .3s;}
+  .progress-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#394649;font-weight:bold;}
+
+  /* 捕捉与对战 */
+  .catch-canvas{width:112px;height:112px;image-rendering:pixelated;}
+  .hit-shake{animation:hitShake .28s ease;}
+  @keyframes hitShake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-8px);}
+    50%{transform:translateX(8px);}
+    75%{transform:translateX(-5px);}
+  }
+  .heal-glow{animation:healGlow .45s ease;}
+  @keyframes healGlow{
+    0%,100%{filter:drop-shadow(0 0 0 transparent);}
+    50%{filter:drop-shadow(0 0 8px #86b98e) brightness(1.25);}
+  }
+
+  /* 界面10：敏捷特训迷你游戏画布 */
+  #trainCanvas{
+    display:block;width:100%;height:260px;background:#a9d4dc;
+    border:3px solid #647b7d;border-radius:6px;box-shadow:0 3px 0 #647b7d;
+    image-rendering:pixelated;touch-action:none;
+  }
+
+  /* 15页信息架构导航网格 */
+  .ia-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px;}
+  .ia-item{
+    background:#f5f2e6;border:2px solid #7f9696;border-radius:5px;padding:7px 8px;
+    font-size:10px;text-align:left;cursor:pointer;box-shadow:0 2px 0 #7f9696;color:#414b50;
+  }
+  .ia-item:active{transform:translateY(1px);box-shadow:0 1px 0 #7f9696;}
+  .ia-item b{display:block;color:#62576e;font-size:10px;margin-bottom:2px;}
+  .ia-item span{color:#75878a;font-size:9px;}
+
+  @media(max-width:420px){
+    body{padding:0;}
+    .phone{width:100vw;height:100dvh;max-height:none;border-radius:0;border-width:0;}
+    .stage{height:min(36vh,272px);}
+  }
+</style>
+  <meta property="og:title" content="Figma Make App">
+</head>
+<body>
+
+<div class="phone">
+  <!-- 顶部掌机状态栏 -->
+  <div class="topbar">
+    <span class="brand" id="brandHomeBtn" title="返回开机页">◈ PIXEL PET</span>
+    <span class="top-stats">
+      <span>🪙<b class="coins" id="coinDisplay">30</b></span>
+      <span>⭐LV.<b id="topLevel">1</b></span>
+      <span>♥<b id="topMood">75</b></span>
+      <button class="ia-nav-btn" id="openIaMapBtn">📑 15页导航</button>
+    </span>
+  </div>
+
+  <!-- 主视图区 (包含 5 个底部 Tab 核心视图) -->
+  <div class="screen">
+
+    <!-- 界面 02：主界面 - 宠物陪伴舱 -->
+    <div class="view active" id="view-nav">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:11px;color:#5a6b6e;font-weight:bold;">[P02] 随身陪伴舱 · 点击宠物互动</span>
+        <span style="font-size:16px;cursor:pointer;padding:2px 4px;" id="gearBtn" title="系统设置">⚙️</span>
+      </div>
+
+      <!-- 4种像素场景切换 -->
+      <div class="scene-switch" aria-label="切换场景">
+        <button class="scene-choice active" data-scene="coast">海岸</button>
+        <button class="scene-choice" data-scene="room">卧室</button>
+        <button class="scene-choice" data-scene="night">月夜</button>
+        <button class="scene-choice" data-scene="cave">洞穴</button>
+      </div>
+
+      <!-- 像素舞台 -->
+      <div class="stage scene-coast" id="mainStage">
+        <div class="stage-hud">
+          <div class="exp-pill">
+            <span>EXP</span>
+            <div class="exp-mini-bar"><div class="exp-mini-fill" id="stageExpBar" style="width:0%"></div></div>
+            <span id="stageExpText">0/20</span>
+          </div>
+          <button class="stage-skill-btn" id="stageSkillBtn">⚡ 技能栏 (2/3)</button>
+        </div>
+
+        <div class="speech-bubble" id="speechBubble">今天也要一起散步吗？</div>
+
+        <span class="scene-cloud cloud-a"></span><span class="scene-cloud cloud-b"></span>
+        <span class="scene-lighthouse"></span><span class="scene-rock rock-a"></span><span class="scene-rock rock-b"></span>
+        <div class="pet-wrap" id="petWrap">
+          <canvas class="pet-canvas" id="petCanvas" width="16" height="16"></canvas>
+        </div>
+        <div class="pet-name" id="petName">小方 · Lv.1</div>
+        <div class="mood-tag" id="moodTag">😊 心情不错</div>
+      </div>
+
+      <!-- 三维状态条 -->
+      <div class="bars">
+        <div class="bar-row hp-mini"><span class="bar-label">生命值</span>
+          <div class="bar-track"><div class="bar-fill" id="mainHpBar" style="width:100%"></div></div>
+          <span class="bar-val" id="mainHpVal">50/50</span></div>
+        <div class="bar-row hunger"><span class="bar-label">饱食度</span>
+          <div class="bar-track"><div class="bar-fill" id="hungerBar" style="width:65%"></div></div>
+          <span class="bar-val" id="hungerVal">65</span></div>
+        <div class="bar-row mood"><span class="bar-label">心情值</span>
+          <div class="bar-track"><div class="bar-fill" id="moodBar" style="width:75%"></div></div>
+          <span class="bar-val" id="moodVal">75</span></div>
+      </div>
+
+      <!-- 计步器与金币兑换 -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <h3 style="margin:0;">▸ 今日步数 → 金币 & 孵蛋</h3>
+          <button class="btn gold sm" id="simStepBtn" style="width:auto;">+1000 模拟步数</button>
+        </div>
+        <div class="steps-row">
+          <span class="steps-num" id="stepsNum">1,000</span>
+          <span class="steps-unit">可用步数 (孵蛋池: <b id="eggPoolMini">500</b>)</span>
+        </div>
+        <input type="range" id="stepsSlider" min="0" max="20000" step="500" value="1000">
+        <button class="btn" id="convertBtn">兑换金币（消耗 1000 步 → 得 1🪙）</button>
+      </div>
+
+      <!-- 功能快捷矩阵 -->
+      <div class="card">
+        <h3>▸ 互动功能矩阵</h3>
+        <div class="grid2">
+          <button class="btn blue" id="gotoMapBtn" style="margin-top:0;">🗺️ 探索地图</button>
+          <button class="btn purple" id="gotoEggBtn" style="margin-top:0;">🥚 孵化蛋屋</button>
+          <button class="btn gold" id="gotoTrainBtn" style="margin-top:0;">🎯 敏捷特训</button>
+          <button class="btn red" id="gotoBattlePrepareBtn" style="margin-top:0;">⚔️ 对战大厅</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 界面 03：LBS 像素探索地图 -->
+    <div class="view" id="view-map">
+      <div class="section-title"><span>🗺️ [P03] LBS 像素探索地图</span><span style="font-size:10px;">消耗 500 步/次</span></div>
+      <div class="hint" style="margin-bottom:8px;">点击地图上的野生宠物触发捕捉！10 种像素伙伴分布在四大生态地形中。</div>
+      <div id="fakeMapWrap"><canvas id="fakeMap" width="600" height="400"></canvas></div>
+      <div class="map-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#3a8a3a"></span>草地·普通/雷</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#1f5f2f"></span>森林·稀有/岩</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2a5fa8"></span>水域·水/稀有</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#4a3a6a"></span>山洞·史诗</div>
+      </div>
+      <div class="map-controls">
+        <button id="regenMapBtn">🔄 重新生成地形</button>
+        <button id="refreshSpawnsBtn">✨ 刷新野生点</button>
+      </div>
+    </div>
+
+    <!-- 界面 05：宠物图鉴 (扩充至10种) -->
+    <div class="view" id="view-dex">
+      <div class="section-title"><span>📖 [P05] 像素宠物图鉴</span><span style="font-size:10px;" id="dexCount">1 / 10</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="btn ghost filter-active" style="flex:1;padding:7px;font-size:10px;margin:0;" data-filter="all" id="filterAllBtn">全部 (10)</button>
+        <button class="btn ghost" style="flex:1;padding:7px;font-size:10px;margin:0;" data-filter="owned">已拥有</button>
+        <button class="btn ghost" style="flex:1;padding:7px;font-size:10px;margin:0;" data-filter="rare">稀有+</button>
+      </div>
+      <div class="grid" id="dexGrid"></div>
+      <div class="hint">点击已拥有宠物进入【P06 详情养成 · 技能装配】与【P07 进化预览】。</div>
+      <button class="btn purple" id="gotoBagBtn" style="margin-top:12px;">🎒 打开随身背包 [P08]</button>
+    </div>
+
+    <!-- 界面 13：每日任务与成就 -->
+    <div class="view" id="view-task">
+      <div class="section-title">📋 [P13] 每日互动任务</div>
+      <div id="taskList"></div>
+      <div class="section-title" style="margin-top:14px;">🏆 驯兽师成就墙</div>
+      <div id="achieveList"></div>
+    </div>
+
+    <!-- 界面 14：像素商城 -->
+    <div class="view" id="view-shop">
+      <div class="section-title"><span>🛒 [P14] 像素补给商城</span><span style="font-size:10px;">金币通用</span></div>
+      <div id="shopList"></div>
+    </div>
+
+  </div>
+
+  <!-- 底部 5-Tab 导航栏 -->
+  <div class="tabbar">
+    <div class="tab active" data-view="nav"><span class="ico">🐾</span>陪伴</div>
+    <div class="tab" data-view="map"><span class="ico">🗺️</span>地图</div>
+    <div class="tab" data-view="dex"><span class="ico">📖</span>图鉴</div>
+    <div class="tab" data-view="task"><span class="ico">📋</span>任务</div>
+    <div class="tab" data-view="shop"><span class="ico">🛒</span>商城</div>
+  </div>
+
+  <!-- ================= 独立子界面 (Fullpages) ================= -->
+
+  <!-- 界面 01：启动/欢迎页 (Splash Screen) -->
+  <div class="fullpage show" id="page-splash">
+    <div class="splash-inner">
+      <div class="splash-logo-box">
+        <div class="splash-sub">HANDHELD COMPANION OS v3.0</div>
+        <div class="splash-title">◈ PIXEL PET</div>
+        <div class="splash-tag">随身像素宠物 · 10物种 & 技能战术版</div>
+      </div>
+
+      <div class="splash-pet-box">
+        <canvas class="splash-canvas" id="splashCanvas" width="16" height="16"></canvas>
+        <div style="font-size:11px;color:#fff8e8;text-shadow:1px 1px #46565a;margin-top:6px;">"你的每一步，都在唤醒新的伙伴"</div>
+      </div>
+
+      <div class="splash-actions">
+        <button class="btn gold" id="startEnterBtn" style="padding:13px;font-size:13px;">▶ 开始陪伴 / 进入掌机</button>
+        <button class="btn blue" id="splashDemoBtn" style="margin-top:0;">✨ 加载课程演示存档（含新宠物与技能）</button>
+        <div style="font-size:9px;color:#414b50;margin-top:2px;">支持 LocalStorage 自动保存 · 含 15 个完整交互界面</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 界面 04：野生宠物捕捉 QTE -->
+  <div class="fullpage" id="page-catch">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="catch">←</span><span class="fp-title">⚠️ 野生遭遇捕捉</span></div>
+      <span class="fp-badge">P04 · 节奏QTE</span>
+    </div>
+    <div class="fp-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <canvas class="catch-canvas" id="catchPetCanvas" width="16" height="16"></canvas>
+      <div style="font-size:13px;font-weight:bold;margin-top:10px;" id="catchPetName">野生小怪</div>
+      <div style="font-size:10px;color:#65787a;margin-top:4px;" id="catchChance">剩余捕捉机会：3</div>
+      <div id="catchMeter" style="width:100%;max-width:290px;height:26px;background:#414b50;border:3px solid #53656a;border-radius:4px;margin-top:18px;position:relative;overflow:hidden;">
+        <div id="catchZone" style="position:absolute;top:0;bottom:0;background:#86b98e;"></div>
+        <div id="catchCursor" style="position:absolute;top:0;bottom:0;width:6px;background:#ffcd75;border:1px solid #000;left:0;"></div>
+      </div>
+      <div style="font-size:10px;color:#65787a;margin-top:8px;text-align:center;">当金色指针进入绿色判定区时点击捕捉（精准命中必抓）！</div>
+      <button class="btn gold" id="catchBtn" style="max-width:260px;margin-top:14px;">🎯 投掷像素球！</button>
+    </div>
+  </div>
+
+  <!-- 界面 06：宠物详情与技能装配 -->
+  <div class="fullpage" id="page-detail">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="detail">←</span><span class="fp-title" id="detailTitle">宠物详情</span></div>
+      <span class="fp-badge">P06 · 养成与技能</span>
+    </div>
+    <div class="fp-body" id="detailBody"></div>
+  </div>
+
+  <!-- 界面 07：宠物进化预览与仪式 -->
+  <div class="fullpage" id="page-evo">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="evo">←</span><span class="fp-title">✨ 形态进化仪式</span></div>
+      <span class="fp-badge">P07 · 进化系统</span>
+    </div>
+    <div class="fp-body" id="evoBody"></div>
+  </div>
+
+  <!-- 界面 08：背包与道具使用 -->
+  <div class="fullpage" id="page-bag">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="bag">←</span><span class="fp-title">🎒 随身背包</span></div>
+      <span class="fp-badge">P08 · 道具管理</span>
+    </div>
+    <div class="fp-body">
+      <div class="hint" style="margin-bottom:10px;">点击道具直接使用：食物可同时恢复饱食度与宠物生命值 (HP)。</div>
+      <div class="section-title">🍎 恢复食物</div><div class="grid" id="bagFood"></div>
+      <div class="section-title" style="margin-top:14px;">⚽ 互动玩具</div><div class="grid" id="bagToy"></div>
+      <div class="section-title" style="margin-top:14px;">🧪 对战补给</div><div class="grid" id="bagBattle"></div>
+    </div>
+  </div>
+
+  <!-- 界面 09：宠物蛋孵化屋 -->
+  <div class="fullpage" id="page-egg">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="egg">←</span><span class="fp-title">🥚 宠物蛋孵化屋</span></div>
+      <span class="fp-badge">P09 · 步数孵化</span>
+    </div>
+    <div class="fp-body">
+      <div class="egg-stage"><div class="egg" id="eggIcon">🥚</div></div>
+      <div class="card">
+        <h3>▸ 步数能量孵化池</h3>
+        <div class="progress">
+          <div class="progress-fill" id="eggProgress" style="width:0%"></div>
+          <div class="progress-text" id="eggProgressText">0 / 3000 步</div>
+        </div>
+        <button class="btn purple" id="eggHatchBtn">凝聚步数生成宠物蛋（消耗 500 步）</button>
+        <div class="hint">行走步数自动注入孵化池，每满 500 步可凝聚一颗随机稀有度宠物蛋（可孵出全部 10 种伙伴）。</div>
+      </div>
+      <div class="card"><h3>▸ 待孵化宠物蛋列表</h3><div id="eggList"></div></div>
+    </div>
+  </div>
+
+  <!-- 界面 10：像素训练场 / 敏捷特训迷你游戏 -->
+  <div class="fullpage" id="page-train">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="train">←</span><span class="fp-title">🎯 像素敏捷特训</span></div>
+      <span class="fp-badge">P10 · 互动小游戏</span>
+    </div>
+    <div class="fp-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;font-weight:bold;">
+        <span>接住苹果(+2分) 躲避炸弹(-3分)</span>
+        <span style="color:#62576e;">得分: <b id="trainScore">0</b> | 倒计时: <b id="trainTime">20</b>s</span>
+      </div>
+      <canvas id="trainCanvas" width="320" height="260"></canvas>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn blue" id="trainLeftBtn" style="margin-top:0;">◀ 向左移动</button>
+        <button class="btn blue" id="trainRightBtn" style="margin-top:0;">向右移动 ▶</button>
+      </div>
+      <button class="btn gold" id="trainStartBtn">▶ 开始 20 秒特训（赚取 EXP 与金币）</button>
+      <div class="hint">支持手指在画布上左右拖动、点击左右按钮或键盘 ← → 方向键控制宠物移动。</div>
+    </div>
+  </div>
+
+  <!-- 界面 11：对战准备大厅 -->
+  <div class="fullpage" id="page-prep">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="prep">←</span><span class="fp-title">⚔️ 对战准备大厅</span></div>
+      <span class="fp-badge">P11 · 战前配置</span>
+    </div>
+    <div class="fp-body">
+      <div class="prep-card"><div class="t">▸ 1. 选择出战伙伴（展示已装配技能）</div><div id="prepPetList"></div></div>
+      <div class="prep-card"><div class="t">▸ 2. 选择对手强度</div><div class="grid" id="prepDifficulty"></div></div>
+      <div class="card" style="margin-top:0;margin-bottom:10px;">
+        <h3>▸ 战斗技能规则提示</h3>
+        <div class="hint" style="margin-top:0;">• 每只宠物最多携带 <b>3 个专属技能</b>，释放后进入独立冷却回合 (CD)<br>• 技能包含暴击、吸血、破甲、护盾、治愈等多种战术特效<br>• 可在【P06 宠物详情页】自由调整技能搭配</div>
+      </div>
+      <button class="btn red" id="startBattleBtn">⚔️ 进入竞技场开战！</button>
+    </div>
+  </div>
+
+  <!-- 界面 12：回合制像素对战竞技场 (含技能栏) -->
+  <div class="fullpage" id="page-battle">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="battle">←</span><span class="fp-title">⚔️ 像素竞技场</span></div>
+      <span class="fp-badge">P12 · 技能对战</span>
+    </div>
+    <div class="fp-body">
+      <div style="width:100%;background:linear-gradient(180deg,#bfe5eb 0%,#8ec2cc 65%,#86b98e 66%);border:3px solid #647b7d;border-radius:6px;padding:12px;display:flex;justify-content:space-between;align-items:flex-end;position:relative;min-height:162px;box-shadow:0 3px 0 #647b7d;">
+        <div id="fighterPlayer" style="position:relative;z-index:2;text-align:center;flex:1;padding-right:8px;">
+          <canvas id="battlePlayerCanvas" width="16" height="16" style="width:72px;height:72px;image-rendering:pixelated;"></canvas>
+          <div id="battlePlayerName" style="font-size:10px;font-weight:bold;margin-top:4px;color:#3d4c4f;">小方 Lv.1</div>
+          <div style="height:11px;background:#c1c8bd;border:2px solid #53656a;border-radius:3px;overflow:hidden;margin-top:3px;">
+            <div id="playerHp" style="width:100%;height:100%;background:#c66f78;transition:width .3s;"></div>
+          </div>
+          <div id="playerHpText" style="font-size:9px;color:#3d4c4f;margin-top:2px;">50/50</div>
+        </div>
+        <div style="font-size:15px;font-weight:bold;color:#62576e;padding-bottom:34px;">VS</div>
+        <div id="fighterEnemy" style="position:relative;z-index:2;text-align:center;flex:1;padding-left:8px;">
+          <canvas id="battleEnemyCanvas" width="16" height="16" style="width:72px;height:72px;image-rendering:pixelated;"></canvas>
+          <div id="battleEnemyName" style="font-size:10px;font-weight:bold;margin-top:4px;color:#3d4c4f;">野怪 Lv.1</div>
+          <div style="height:11px;background:#c1c8bd;border:2px solid #53656a;border-radius:3px;overflow:hidden;margin-top:3px;">
+            <div id="enemyHp" style="width:100%;height:100%;background:#6b9bc3;transition:width .3s;"></div>
+          </div>
+          <div id="enemyHpText" style="font-size:9px;color:#3d4c4f;margin-top:2px;">50/50</div>
+        </div>
+      </div>
+
+      <div id="battleLog" style="width:100%;height:86px;background:#f5f2e6;border:2px solid #899b9a;border-radius:6px;margin-top:8px;padding:7px 8px;font-size:10px;color:#46565a;overflow-y:auto;line-height:1.55;">战斗开始！</div>
+
+      <!-- 技能栏 2x2 战术面板 -->
+      <div style="font-size:10px;font-weight:bold;color:#5a666b;margin-top:8px;">▸ 战术指令与专属技能栏</div>
+      <div class="battle-actions-grid" id="battleSkillGrid">
+        <!-- 动态生成：普攻 + 最多3个装配技能 -->
+      </div>
+
+      <!-- 辅助指令栏 -->
+      <div style="display:flex;gap:8px;width:100%;margin-top:6px;">
+        <button class="btn blue sm" id="btnDefend" style="flex:1;">🛡️ 防御姿态</button>
+        <button class="btn sm" id="btnHeal" style="flex:1;">🧪 药水/治愈</button>
+      </div>
+      <div id="battleReward" style="font-size:11px;font-weight:bold;color:#4f7a5d;margin-top:8px;text-align:center;line-height:1.5;"></div>
+    </div>
+  </div>
+
+  <!-- 界面 15：系统设置与课程演示工具 -->
+  <div class="fullpage" id="page-settings">
+    <div class="fp-header">
+      <div class="fp-header-left"><span class="fp-back" data-close="settings">←</span><span class="fp-title">⚙️ 系统设置与演示控制</span></div>
+      <span class="fp-badge">P15 · 系统设置</span>
+    </div>
+    <div class="fp-body">
+      <div class="setting-row"><span>每日喂食提醒</span><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>计步器自动同步</span><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>掌机合成音效 (WebAudio)</span><div class="switch on" id="soundSwitch"></div></div>
+      <div class="setting-row"><span>触控震动反馈</span><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+
+      <div class="card">
+        <h3> 演示快捷控制</h3>
+        <div class="hint" style="margin-top:0;margin-bottom:8px;">一键注入多只新物种宠物、已解锁全技能槽与可进化等级，方便展示技能对战与进化仪式！</div>
+        <button class="btn gold" id="injectDemoBtn" style="margin-top:0;">✨ 演示数据（Lv.5可进化+5只宠物）</button>
+        <button class="btn blue" id="downloadHtmlBtn">↓ 下载独立 HTML 文件</button>
+        <button class="btn red" id="resetSaveBtn">🗑️ 清空本地存档并恢复初始状态</button>
+      </div>
+      <div class="hint" style="text-align:center;margin-top:10px;">PIXEL PET OS v3.0 · 信息交互设计课程作业完整版</div>
+    </div>
+  </div>
+
+  <!-- ================= 模态弹窗群 ================= -->
+
+  <!-- 15页信息架构直达地图弹窗 -->
+  <div class="modal" id="modal-ia-map">
+    <div class="modal-box">
+      <span class="modal-close" onclick="document.getElementById('modal-ia-map').classList.remove('show')">×</span>
+      <div class="modal-title">📑 信息架构总览 (15个独立界面)</div>
+      <div class="hint" style="margin-top:0;text-align:center;">点击任意卡片可立即跳转至对应交互界面：</div>
+      <div class="ia-grid" id="iaGrid"></div>
+    </div>
+  </div>
+
+  <!-- 对战结算弹窗 -->
+  <div class="modal" id="modal-battle-result">
+    <div class="modal-box">
+      <div class="modal-title" id="resultTitle">胜利！</div>
+      <div style="text-align:center;font-size:36px;margin-bottom:10px;" id="resultEmoji">🏆</div>
+      <div style="text-align:center;font-size:11px;line-height:1.7;color:#536266;" id="resultText"></div>
+      <button class="btn gold" id="battleResultConfirmBtn" style="margin-top:14px;">确定并返回</button>
+    </div>
+  </div>
+
+  <!-- 商城购买详情弹窗 -->
+  <div class="modal" id="modal-shop">
+    <div class="modal-box">
+      <span class="modal-close" onclick="document.getElementById('modal-shop').classList.remove('show')">×</span>
+      <div class="modal-title" id="shopModalTitle">商品详情</div>
+      <div style="text-align:center;font-size:44px;margin-bottom:10px;" id="shopModalEmoji">🍎</div>
+      <div style="text-align:center;font-size:11px;line-height:1.7;color:#536266;" id="shopModalDesc"></div>
+      <button class="btn gold" id="shopModalBuy" style="margin-top:14px;">确认购买</button>
+    </div>
+  </div>
+
+  <!-- 宠物改名弹窗 -->
+  <div class="modal" id="modal-rename">
+    <div class="modal-box">
+      <span class="modal-close" onclick="document.getElementById('modal-rename').classList.remove('show')">×</span>
+      <div class="modal-title">✏️ 给宠物改名</div>
+      <input class="rename-input" id="renameInput" maxlength="8" placeholder="输入新名字 (1-8字)">
+      <button class="btn gold" id="renameConfirm">保存名字</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ================= 掌机复古合成音效 (单例复用修复内存泄漏) ================= */
+let soundEnabled = true;
+let sharedAudioCtx = null;
+
+function playBeep(freq = 520, dur = 0.07, type = 'square') {
+  if (!soundEnabled) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    if (!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+    if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+    const osc = sharedAudioCtx.createOscillator();
+    const gain = sharedAudioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, sharedAudioCtx.currentTime);
+    gain.gain.setValueAtTime(0.045, sharedAudioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, sharedAudioCtx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(sharedAudioCtx.destination);
+    osc.start();
+    osc.stop(sharedAudioCtx.currentTime + dur);
+  } catch (e) {}
+}
+
+/* ================= 元素属性色标 ================= */
+const ELEMENT_INFO = {
+  light: { name:'光', color:'#d49b27' },
+  grass: { name:'草', color:'#5b8c6b' },
+  wind:  { name:'风', color:'#4b89b8' },
+  dark:  { name:'暗', color:'#7b629c' },
+  dragon:{ name:'龙', color:'#b87c14' },
+  fire:  { name:'火', color:'#c66f78' },
+  water: { name:'水', color:'#3a82a8' },
+  bolt:  { name:'雷', color:'#c9a227' },
+  rock:  { name:'岩', color:'#7d6b5d' },
+  star:  { name:'星', color:'#675b70' },
+};
+
+/* ================= 技能库系统 ================= */
+const SKILLS = {
+  // 通用与初阶技能
+  tackle:      { id:'tackle',      name:'像素冲撞', icon:'💥', elem:'light', power:1.0,  cd:0, effect:'none',   desc:'基础物理撞击，无冷却时间' },
+  sparkleBeam: { id:'sparkleBeam', name:'棱镜闪光', icon:'✨', elem:'light', power:1.35, cd:2, effect:'crit',   desc:'1.35倍伤害，暴击率大幅提升' },
+  solarGuard:  { id:'solarGuard',  name:'光能护盾', icon:'🔰', elem:'light', power:0.8,  cd:3, effect:'shield', desc:'造成伤害并进入减伤防御姿态' },
+  skyRoar:     { id:'skyRoar',     name:'天翔烈斩', icon:'🦅', elem:'light', power:1.75, cd:3, effect:'pierce', desc:'1.75倍伤害，无视敌方部分防御' },
+
+  vineWhip:    { id:'vineWhip',    name:'藤蔓抽击', icon:'🌿', elem:'grass', power:1.25, cd:1, effect:'none',   desc:'1.25倍草系物理抽击' },
+  leechSeed:   { id:'leechSeed',   name:'光合汲取', icon:'🌱', elem:'grass', power:1.15, cd:2, effect:'drain',  desc:'造成伤害并吸取 50% 生命值' },
+  natureBless: { id:'natureBless', name:'翡翠甘霖', icon:'💚', elem:'grass', power:0,    cd:3, effect:'heal',   desc:'立即恢复自身 35% 最大生命值' },
+
+  gustSlash:   { id:'gustSlash',   name:'疾风之刃', icon:'🌪️', elem:'wind',  power:1.3,  cd:1, effect:'crit',   desc:'1.3倍风刃，极易触发会心一击' },
+  featherDance:{ id:'featherDance',name:'羽翼乱舞', icon:'🪶', elem:'wind',  power:1.5,  cd:2, effect:'none',   desc:'连续高速风压冲击' },
+  falconDive:  { id:'falconDive',  name:'苍穹俯冲', icon:'⚡', elem:'wind',  power:1.8,  cd:3, effect:'pierce', desc:'超高倍率俯冲，击穿防御' },
+
+  shadowBite:  { id:'shadowBite',  name:'暗影突袭', icon:'🦇', elem:'dark',  power:1.3,  cd:1, effect:'crit',   desc:'潜入影中发动突袭' },
+  nightDrain:  { id:'nightDrain',  name:'猩红汲血', icon:'🩸', elem:'dark',  power:1.25, cd:2, effect:'drain',  desc:'吸取目标生命转化为自身HP' },
+  voidBurst:   { id:'voidBurst',   name:'永夜坍缩', icon:'🌑', elem:'dark',  power:1.85, cd:3, effect:'pierce', desc:'释放暗影能量造成毁灭打击' },
+
+  dragonClaw:  { id:'dragonClaw',  name:'龙鳞利爪', icon:'🐉', elem:'dragon',power:1.35, cd:1, effect:'none',   desc:'1.35倍龙系刚猛斩击' },
+  goldRoar:    { id:'goldRoar',    name:'金辉龙息', icon:'🔥', elem:'dragon',power:1.65, cd:2, effect:'pierce', desc:'灼热龙息穿透敌方护甲' },
+  imperialAura:{ id:'imperialAura',name:'神龙天威', icon:'👑', elem:'dragon',power:1.95, cd:3, effect:'drain',  desc:'终极龙威，重创敌人并回复自身' },
+
+  emberFox:    { id:'emberFox',    name:'狐火连弹', icon:'🔥', elem:'fire',  power:1.35, cd:1, effect:'crit',   desc:'发射灼热狐火弹幕' },
+  flameTail:   { id:'flameTail',   name:'烈焰旋尾', icon:'🦊', elem:'fire',  power:1.65, cd:2, effect:'pierce', desc:'高温火焰击穿敌方防御' },
+  nineInferno: { id:'nineInferno', name:'九尾焚天', icon:'☄️', elem:'fire',  power:2.0,  cd:3, effect:'crit',   desc:'最高 2.0 倍爆发火焰终结技' },
+
+  // 新增 4 物种专属技能
+  bubbleJet:   { id:'bubbleJet',   name:'高压水炮', icon:'💧', elem:'water', power:1.25, cd:1, effect:'none',   desc:'喷射高压水流冲击对手' },
+  shellFort:   { id:'shellFort',   name:'珍珠硬壳', icon:'🐚', elem:'water', power:0.7,  cd:2, effect:'shield', desc:'攻击同时大幅提升自身防御' },
+  tidalWave:   { id:'tidalWave',   name:'怒海狂涛', icon:'🌊', elem:'water', power:1.7,  cd:3, effect:'heal',   desc:'巨浪席卷敌方并恢复 20% HP' },
+
+  thunderJolt: { id:'thunderJolt', name:'十万伏特', icon:'⚡', elem:'bolt',  power:1.35, cd:1, effect:'crit',   desc:'高暴击率的电击脉冲' },
+  voltDash:    { id:'voltDash',    name:'电光一闪', icon:'💫', elem:'bolt',  power:1.55, cd:2, effect:'pierce', desc:'超高速雷光突刺' },
+  plasmaStorm: { id:'plasmaStorm', name:'雷霆万钧', icon:'🌩️', elem:'bolt',  power:1.9,  cd:3, effect:'crit',   desc:'召唤落雷轰击敌方' },
+
+  rockThrow:   { id:'rockThrow',   name:'落岩重击', icon:'🪨', elem:'rock',  power:1.3,  cd:1, effect:'pierce', desc:'投掷巨石砸碎防御' },
+  ironWall:    { id:'ironWall',    name:'玄武壁垒', icon:'🛡️', elem:'rock',  power:0.6,  cd:2, effect:'shield', desc:'进入坚不可摧的防御状态' },
+  quakeSlam:   { id:'quakeSlam',   name:'山崩地裂', icon:'⛰️', elem:'rock',  power:1.75, cd:3, effect:'pierce', desc:'引发地震造成巨额物理伤害' },
+
+  starlight:   { id:'starlight',   name:'星屑魔法', icon:'🌟', elem:'star',  power:1.35, cd:1, effect:'crit',   desc:'凝聚星光发射魔法射线' },
+  moonBless:   { id:'moonBless',   name:'月华祈愿', icon:'🌙', elem:'star',  power:0,    cd:3, effect:'heal',   desc:'沐浴月光恢复 40% 生命值' },
+  galaxyNova:  { id:'galaxyNova',  name:'九曜星爆', icon:'🌌', elem:'star',  power:2.05, cd:3, effect:'drain',  desc:'星河爆发，造成巨伤并汲取能量' },
+};
+
+/* ================= 物种库 (扩充至 10 种，含进化解锁技能池) ================= */
+const PET_SPECIES = {
+  '小方': { rarity:'common', elem:'light', habitat:'grass', catchRate:0.9,
+    skillPool:[ { id:'sparkleBeam', unlockStage:0 }, { id:'solarGuard', unlockStage:1 }, { id:'skyRoar', unlockStage:2 } ],
+    stages:[
+      { name:'小方', color:'#e5bd58', hp:50, atk:9, def:5 },
+      { name:'方方', color:'#df9e42', hp:85, atk:15, def:9 },
+      { name:'方鸟', color:'#d47c2a', hp:130, atk:23, def:15 },
+  ]},
+  '绿团': { rarity:'common', elem:'grass', habitat:'grass', catchRate:0.85,
+    skillPool:[ { id:'vineWhip', unlockStage:0 }, { id:'leechSeed', unlockStage:1 }, { id:'natureBless', unlockStage:2 } ],
+    stages:[
+      { name:'绿团', color:'#6cb278', hp:55, atk:10, def:6 },
+      { name:'绿蛙', color:'#4c9659', hp:92, atk:16, def:11 },
+      { name:'碧蟾', color:'#337840', hp:138, atk:24, def:17 },
+  ]},
+  '海螺灵': { rarity:'common', elem:'water', habitat:'water', catchRate:0.85,
+    skillPool:[ { id:'bubbleJet', unlockStage:0 }, { id:'shellFort', unlockStage:1 }, { id:'tidalWave', unlockStage:2 } ],
+    stages:[
+      { name:'海螺灵', color:'#5ca8c9', hp:58, atk:9, def:8 },
+      { name:'浪涛螺', color:'#3d89ab', hp:96, atk:15, def:13 },
+      { name:'海皇螺', color:'#25698a', hp:145, atk:22, def:20 },
+  ]},
+  '蓝羽': { rarity:'rare', elem:'wind', habitat:'water', catchRate:0.65,
+    skillPool:[ { id:'gustSlash', unlockStage:0 }, { id:'featherDance', unlockStage:1 }, { id:'falconDive', unlockStage:2 } ],
+    stages:[
+      { name:'蓝羽', color:'#62a3c7', hp:48, atk:12, def:5 },
+      { name:'蓝翼', color:'#4283ab', hp:78, atk:19, def:9 },
+      { name:'苍隼', color:'#29638a', hp:118, atk:28, def:14 },
+  ]},
+  '紫影': { rarity:'rare', elem:'dark', habitat:'forest', catchRate:0.58,
+    skillPool:[ { id:'shadowBite', unlockStage:0 }, { id:'nightDrain', unlockStage:1 }, { id:'voidBurst', unlockStage:2 } ],
+    stages:[
+      { name:'紫影', color:'#9a82b8', hp:50, atk:14, def:5 },
+      { name:'紫翼', color:'#7b629c', hp:82, atk:22, def:10 },
+      { name:'暗影蝠', color:'#5c447d', hp:124, atk:32, def:15 },
+  ]},
+  '电电鼠': { rarity:'rare', elem:'bolt', habitat:'grass', catchRate:0.62,
+    skillPool:[ { id:'thunderJolt', unlockStage:0 }, { id:'voltDash', unlockStage:1 }, { id:'plasmaStorm', unlockStage:2 } ],
+    stages:[
+      { name:'电电鼠', color:'#e8c848', hp:48, atk:14, def:5 },
+      { name:'雷光兔', color:'#d9ad26', hp:80, atk:23, def:9 },
+      { name:'霹雳兽', color:'#bf8c11', hp:120, atk:34, def:14 },
+  ]},
+  '岩岩龟': { rarity:'rare', elem:'rock', habitat:'forest', catchRate:0.6,
+    skillPool:[ { id:'rockThrow', unlockStage:0 }, { id:'ironWall', unlockStage:1 }, { id:'quakeSlam', unlockStage:2 } ],
+    stages:[
+      { name:'岩岩龟', color:'#8c7b6b', hp:66, atk:11, def:9 },
+      { name:'玄武岩', color:'#6e5e4f', hp:110, atk:18, def:15 },
+      { name:'山岳巨龟', color:'#524336', hp:165, atk:26, def:23 },
+  ]},
+  '金鳞': { rarity:'epic', elem:'dragon', habitat:'cave', catchRate:0.42,
+    skillPool:[ { id:'dragonClaw', unlockStage:0 }, { id:'goldRoar', unlockStage:1 }, { id:'imperialAura', unlockStage:2 } ],
+    stages:[
+      { name:'金鳞', color:'#e5bd58', hp:68, atk:15, def:8 },
+      { name:'金龙', color:'#d49b27', hp:108, atk:24, def:14 },
+      { name:'神龙', color:'#b87c14', hp:160, atk:36, def:21 },
+  ]},
+  '焰尾': { rarity:'epic', elem:'fire', habitat:'cave', catchRate:0.38,
+    skillPool:[ { id:'emberFox', unlockStage:0 }, { id:'flameTail', unlockStage:1 }, { id:'nineInferno', unlockStage:2 } ],
+    stages:[
+      { name:'焰尾', color:'#c66f78', hp:62, atk:16, def:7 },
+      { name:'烈焰狐', color:'#b8505b', hp:100, atk:26, def:12 },
+      { name:'九尾炎', color:'#9e333f', hp:150, atk:38, def:18 },
+  ]},
+  '星月猫': { rarity:'epic', elem:'star', habitat:'cave', catchRate:0.38,
+    skillPool:[ { id:'starlight', unlockStage:0 }, { id:'moonBless', unlockStage:1 }, { id:'galaxyNova', unlockStage:2 } ],
+    stages:[
+      { name:'星月猫', color:'#7c72a8', hp:60, atk:16, def:7 },
+      { name:'幻星狸', color:'#605591', hp:98, atk:26, def:12 },
+      { name:'九曜神猫', color:'#453a75', hp:148, atk:39, def:18 },
+  ]},
+};
+const EVO_LEVELS = [5, 10];
+
+/* ================= 16x16 像素矩阵 (10物种 × 3阶段 = 30张独立像素图) ================= */
+const PIXEL_ART = {
+  '小方': {
+    0: [
+      '................','................','................','.....11111......',
+      '....1111111.....','....1144111.....','....1333331.....','....1115111.....',
+      '....1111111.....','....1111111.....','.....11111......','.....11.11......',
+      '.....11.11......','................','................','................',
+    ],
+    1: [
+      '................','......111.......','.....11111......','....1111111.....',
+      '...114441111....','...133333311....','...111511111....','...111111111....',
+      '..2111111111....','..11111111112...','...111111111....','....11...11.....',
+      '....11...11.....','....11...11.....','................','................',
+    ],
+    2: [
+      '......111.......','.....11111......','....1111111.....','...111111111....',
+      '..11144411111...','..11333333111...','..11115111111...','..11111111111...',
+      '.211111111111...','.2111111111112..','.2111111111112..','..11111111111...',
+      '...11.....11....','...11.....11....','...11.....11....','................',
+    ]
+  },
+  '绿团': {
+    0: [
+      '................','................','...33......33...','..3443....3443..',
+      '..3113....3113..','..11111111111...','.1111111111111..','.1111111111111..',
+      '.1115515555111..','.1111111111111..','..11111111111...','...1111.1111....',
+      '................','................','................','................',
+    ],
+    1: [
+      '................','...33......33...','..3443....3443..','..3113....3113..',
+      '..11111111111...','.1111111111111..','211111111111112.','211111111111112.',
+      '211115515551112.','211111111111112.','.1111111111111..','..1111111111....',
+      '...11.....11....','...11.....11....','................','................',
+    ],
+    2: [
+      '...33......33...','..3443....3443..','.334113..331143.','.31111133111113.',
+      '2111111111111112','2111111111111112','2111111111111112','2111511115111112',
+      '2111115511111112','2111111111111112','.11111111111111.','..111111111111..',
+      '...111....111...','...11......11...','................','................',
+    ]
+  },
+  '海螺灵': {
+    0: [
+      '................','.......66.......','......6226......','.....211112.....',
+      '....21166112....','...2111111112...','...1144114411...','...1133113311...',
+      '....11155111....','.....111111.....','......1111......','................',
+      '................','................','................','................',
+    ],
+    1: [
+      '.......66.......','......6226......','.....216612.....','....21122112....',
+      '...2111111112...','..211166661112..','..111441144111..','..111331133111..',
+      '...1111551111...','...2111111112...','....22111122....','.....22..22.....',
+      '................','................','................','................',
+    ],
+    2: [
+      '......6666......','.....621126.....','....21622612....','...2112662112...',
+      '..211112211112..','.21116611661112.','.11114411441111.','.11113311331111.',
+      '..111115511111..','.22111111111122.','22.2211111122.22','....222..222....',
+      '................','................','................','................',
+    ]
+  },
+  '蓝羽': {
+    0: [
+      '................','......111.......','.....11111......','....1144411.....',
+      '....1333311.....','....1155111.....','...111111111....','..11111111111...',
+      '..11111111111...','...11.....11....','...11.....11....','................',
+      '................','................','................','................',
+    ],
+    1: [
+      '.......11.......','......1111......','.....114441.....','....11333311....',
+      '....11155111....','...111111111....','..11111111111...','.2111111111112..',
+      '.2111111111112..','.2111111111112..','..11111111111...','...11.....11....',
+      '...11.....11....','...11.....11....','................','................',
+    ],
+    2: [
+      '.......111......','......11111.....','.....1144441....','....113333311...',
+      '....111555111...','..111111111111..','.21111111111112.','2111111111111112',
+      '2111111111111112','2111111111111112','.21111111111112.','..1111111111....',
+      '...11.....11....','...11.....11....','...11.....11....','................',
+    ]
+  },
+  '紫影': {
+    0: [
+      '................','..11......11....','.1111....1111...','.1111111111111..',
+      '.1133311113331..','.1115511115511..','.1111111111111..','..11111111111...',
+      '...1111.1111....','....11...11.....','................','................',
+      '................','................','................','................',
+    ],
+    1: [
+      '.11..........11.','1111........1111','1111111111111111','1113331111333111',
+      '1111551111551111','2111111111111112','2111111111111112','.11111111111111.',
+      '..111111111111..','...111....111...','...11......11...','................',
+      '................','................','................','................',
+    ],
+    2: [
+      '11............11','111..........111','1111111111111111','1113331111333111',
+      '1111551111551111','2111111111111112','2111111111111112','2211111111111222',
+      '.21111111111112.','..111111111111..','...111....111...','...11......11...',
+      '...11......11...','................','................','................',
+    ]
+  },
+  '电电鼠': {
+    0: [
+      '................','..33........33..','..21........12..','...1111111111...',
+      '...1441111441...','...1331111331...','..551115511155..','...1111111111...',
+      '....11111111..6.','....11111111.66.','.....11..11.66..','................',
+      '................','................','................','................',
+    ],
+    1: [
+      '.33..........33.','.211........112.','..111111111111..','..114411114411..',
+      '..113311113311..','.55111155111155.','..111111111111..','...1111111111.66',
+      '...111111111166.','....111..11166..','....11....11....','................',
+      '................','................','................','................',
+    ],
+    2: [
+      '33............33','211..........112','.11116666661111.','.11144111144111.',
+      '.11133111133111.','5511111551111155','.11111111111111.','..11111111111166',
+      '..2111111111126.','...111....1116..','...11......11...','...11......11...',
+      '................','................','................','................',
+    ]
+  },
+  '岩岩龟': {
+    0: [
+      '................','................','.....222222.....','....26622662....',
+      '...2222222222...','..112222222222..','.1411111111111..','.1311111111111..',
+      '..11111111111...','...222....222...','...222....222...','................',
+      '................','................','................','................',
+    ],
+    1: [
+      '................','....22222222....','...2662222662...','..222266662222..',
+      '.22222222222222.','1112222222222222','1411111111111111','1311111111111111',
+      '.11111111111111.','..2222....2222..','..2222....2222..','................',
+      '................','................','................','................',
+    ],
+    2: [
+      '......6666......','....22622622....','...2662222662...','..222266662222..',
+      '.222222222222222','1111222222222222','1441111111111111','1331111111111111',
+      '.111111111111111','..22222..22222..','..22222..22222..','................',
+      '................','................','................','................',
+    ]
+  },
+  '金鳞': {
+    0: [
+      '................','...11......11...','..1111....1111..','...11111111.....',
+      '...144111441....','...133111331....','...111551111....','..11111111111...',
+      '..11111111111...','...111111111....','...11.....11....','...11.....11....',
+      '................','................','................','................',
+    ],
+    1: [
+      '..11........11..','.1111......1111.','..111111111111..','..114411441111..',
+      '..113311331111..','..11155111111...','.21111111111112.','.21111111111112.',
+      '.21111111111112.','.21111111111112.','..1111111111....','...11......11...',
+      '...11......11...','...11......11...','................','................',
+    ],
+    2: [
+      '11............11','1111........1111','1111111111111111','1114441111444111',
+      '1113331111333111','1111555555111111','2111111111111112','2111111111111112',
+      '2111111111111112','2211111111111122','.21111111111112.','..111111111111..',
+      '...11.....11....','...11.....11....','...11.....11....','................',
+    ]
+  },
+  '焰尾': {
+    0: [
+      '................','..11........11..','.1111......1111.','..111111111111..',
+      '..114411441111..','..113311331111..','..111551111111..','.1111111111111..',
+      '111111111111111.','11111111111111..','1111.1111.11....','.11...11...11...',
+      '................','................','................','................',
+    ],
+    1: [
+      '.11..........11.','1111........1111','1111111111111111','1114441111444111',
+      '1113331111333111','1111555555111111','2111111111111112','2111111111111112',
+      '2111111111111112','2211111111111122','.21111111111112.','..111111111111..',
+      '...11.....11....','...11.....11....','...11.....11....','................',
+    ],
+    2: [
+      '11............11','1111........1111','1111111111111111','1114441111444111',
+      '1113331111333111','1111555555111111','2111111111111112','2111111111111112',
+      '2211111111111122','2211111111111122','.21111111111112.','..111111111111..',
+      '...11.....11....','...11.....11....','...11.....11....','................',
+    ]
+  },
+  '星月猫': {
+    0: [
+      '................','..21........12..','..111......111..','...1111661111...',
+      '...1144114411...','...1133113311...','....11155111....','....11111111....',
+      '....11111111..6.','.....11..11..6..','.....11..11.....','................',
+      '................','................','................','................',
+    ],
+    1: [
+      '.21..........12.','.111...66...111.','..111166661111..','..114411114411..',
+      '..113311113311..','...1111551111...','...2111111112.66','...21111111126..',
+      '....111..1116...','....11....11....','....11....11....','................',
+      '................','................','................','................',
+    ],
+    2: [
+      '211....66....112','1111..6666..1111','.11111666611111.','.11144111144111.',
+      '.11133111133111.','..111115511111..','6.211111111112.6','.62211111111226.',
+      '...1111..1111...','...111....111...','...11......11...','................',
+      '................','................','................','................',
+    ]
+  }
+};
+
+function drawPet(canvas, species, stage) {
+  if (!canvas) return;
+  const sp = PET_SPECIES[species];
+  if (!sp) return;
+  stage = Math.min(stage, 2);
+  const matrix = PIXEL_ART[species] && PIXEL_ART[species][stage];
+  if (!matrix) return;
+  const color = sp.stages[stage].color;
+  const dark = shadeColor(color, -30);
+  const eyeBlack = '#2b3336';
+  const eyeWhite = '#fffaf0';
+  const mouth = shadeColor(color, -50);
+
+  const ctx = canvas.getContext('2d');
+  const W = 16, H = 16;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+  ctx.imageSmoothingEnabled = false;
+
+  for (let y = 0; y < H; y++) {
+    const row = matrix[y] || '';
+    for (let x = 0; x < W; x++) {
+      const ch = row[x] || '0';
+      if (ch === '0' || ch === '.') continue;
+      let fill = color;
+      if (ch === '2') fill = dark;
+      else if (ch === '3') fill = eyeBlack;
+      else if (ch === '4') fill = eyeWhite;
+      else if (ch === '5') fill = mouth;
+      else if (ch === '6') fill = '#fff6b3';
+      ctx.fillStyle = fill;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
+function shadeColor(hex, percent) {
+  let r = parseInt(hex.substr(1,2), 16);
+  let g = parseInt(hex.substr(3,2), 16);
+  let b = parseInt(hex.substr(5,2), 16);
+  r = Math.max(0, Math.min(255, r + percent));
+  g = Math.max(0, Math.min(255, g + percent));
+  b = Math.max(0, Math.min(255, b + percent));
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+/* ================= 道具库 ================= */
+const ITEMS = {
+  apple:{ name:'像素苹果', emoji:'🍎', type:'food', value:20, hpHeal:15, price:3, desc:'饱食度 +20，同时恢复 15 HP' },
+  fish:{ name:'香煎小鱼干', emoji:'🐟', type:'food', value:40, hpHeal:35, price:6, desc:'饱食度 +40，同时恢复 35 HP' },
+  ball:{ name:'彩虹皮球', emoji:'⚽', type:'toy', value:25, price:4, desc:'心情值 +25' },
+  soap:{ name:'云朵泡泡浴', emoji:'🛁', type:'toy', value:50, price:8, desc:'心情值 +50' },
+  potion:{ name:'对战恢复药水', emoji:'🧪', type:'battle', value:30, price:5, desc:'战斗中恢复 30 HP' },
+  eggCommon:{ name:'普通像素蛋', emoji:'🥚', type:'egg', rarity:'common', price:15, desc:'孵化出随机普通宠物' },
+  eggRare:{ name:'稀有闪光蛋', emoji:'🥚', type:'egg', rarity:'rare', price:35, desc:'孵化出随机稀有宠物' },
+};
+
+/* ================= 辅助：初始化宠物默认技能 ================= */
+function getDefaultSkills(species, stage = 0) {
+  const sp = PET_SPECIES[species];
+  if (!sp || !sp.skillPool) return ['sparkleBeam'];
+  return sp.skillPool.filter(s => s.unlockStage <= stage).map(s => s.id).slice(0, 3);
+}
+
+function ensurePetSkills(pet) {
+  if (!pet) return;
+  if (!Array.isArray(pet.skills)) {
+    pet.skills = getDefaultSkills(pet.species, pet.stage);
+  }
+}
+
+/* ================= 游戏全局状态与存档 ================= */
+const DEFAULT_STATE = () => ({
+  coins: 30,
+  steps: 1000,
+  eggSteps: 500,
+  totalSteps: 1000,
+  hunger: 65,
+  mood: 75,
+  bag: { apple:3, fish:1, ball:2, soap:1, potion:2 },
+  eggs: [{ rarity:'common' }],
+  activePet: 'p1',
+  pets: {
+    'p1': { id:'p1', name:'小方', species:'小方', stage:0, level:1, exp:0, maxHp:50, hp:50, atk:9, def:5, skills:['sparkleBeam'] }
+  },
+  nextPetId: 2,
+  tasks: [
+    { id:'walk5000', text:'今日累计走 5000 步', progress:1000, goal:5000, reward:'10🪙', claimed:false },
+    { id:'win3', text:'竞技场赢得 3 场对战', progress:0, goal:3, reward:'15🪙', claimed:false },
+    { id:'catch1', text:'野外捕捉 1 只新宠物', progress:0, goal:1, reward:'1个稀有蛋', claimed:false },
+    { id:'evolve1', text:'完成 1 次形态进化', progress:0, goal:1, reward:'20🪙', claimed:false },
+  ],
+  achievements: [
+    { text:'首次野生捕捉成功', done:false },
+    { text:'同时拥有 4 只像素宠物', done:false },
+    { text:'将任意宠物培养至 Lv.5', done:false },
+    { text:'赢得首场像素对战', done:false },
+    { text:'见证首次形态进化', done:false },
+  ],
+  prepSelected: 'p1',
+  prepDifficulty: 'normal',
+  dexFilter: 'all',
+});
+
+let state = DEFAULT_STATE();
+const SAVE_KEY = 'pixel_pet_ia_assignment_v3';
+
+function saveState() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = Object.assign(DEFAULT_STATE(), parsed);
+      Object.values(state.pets).forEach(ensurePetSkills);
+    }
+  } catch (e) {}
+}
+
+const $ = id => document.getElementById(id);
+
+/* ================= 页面路由与 15页导航地图 ================= */
+const ALL_PAGES = [
+  { id:'splash', code:'P01', name:'开机启动页', desc:'掌机欢迎与存档入口', action:() => openPage('splash') },
+  { id:'nav', code:'P02', name:'主陪伴舱', desc:'4场景切换/触摸/步数', action:() => { closeAllFullpages(); switchTab('nav'); } },
+  { id:'map', code:'P03', name:'LBS探索地图', desc:'10种生态野生宠物捕捉', action:() => { closeAllFullpages(); switchTab('map'); } },
+  { id:'catch', code:'P04', name:'野生捕捉QTE', desc:'节奏指针判定捕捉', action:() => { closeAllFullpages(); openCatch('电电鼠'); } },
+  { id:'dex', code:'P05', name:'像素宠物图鉴', desc:'10种全图鉴筛选与剪影', action:() => { closeAllFullpages(); switchTab('dex'); } },
+  { id:'detail', code:'P06', name:'宠物详情与技能', desc:'属性养成与3技能槽装配', action:() => { closeAllFullpages(); openDetail(state.activePet); } },
+  { id:'evo', code:'P07', name:'形态进化仪式', desc:'进化对比与新技能解锁', action:() => { closeAllFullpages(); openEvoPage(state.activePet, true); } },
+  { id:'bag', code:'P08', name:'随身背包', desc:'食物/玩具/对战道具', action:() => { closeAllFullpages(); openPage('bag'); } },
+  { id:'egg', code:'P09', name:'宠物蛋孵化屋', desc:'步数孵化与破壳动画', action:() => { closeAllFullpages(); openPage('egg'); } },
+  { id:'train', code:'P10', name:'敏捷特训游戏', desc:'接苹果小游戏赚EXP', action:() => { closeAllFullpages(); openPage('train'); } },
+  { id:'prep', code:'P11', name:'对战准备大厅', desc:'选择出战与技能核对', action:() => { closeAllFullpages(); renderPrep(); openPage('prep'); } },
+  { id:'battle', code:'P12', name:'技能回合竞技场', desc:'自定义3技能+CD战术对战', action:() => { closeAllFullpages(); startBattle(state.activePet, 'normal'); } },
+  { id:'task', code:'P13', name:'任务与成就墙', desc:'每日进度与领奖勋章', action:() => { closeAllFullpages(); switchTab('task'); } },
+  { id:'shop', code:'P14', name:'像素补给商城', desc:'金币购买道具与蛋', action:() => { closeAllFullpages(); switchTab('shop'); } },
+  { id:'settings', code:'P15', name:'设置与演示台', desc:'音效开关与一键满级', action:() => { closeAllFullpages(); openPage('settings'); } },
+];
+
+function openPage(name) {
+  playBeep(620, 0.05);
+  $('page-' + name).classList.add('show');
+}
+
+function closePage(name) {
+  playBeep(420, 0.05);
+  if (name === 'catch' && catchRaf) {
+    cancelAnimationFrame(catchRaf);
+    catchRaf = null;
+  }
+  if (name === 'train') {
+    stopTrainGame();
+  }
+  $('page-' + name).classList.remove('show');
+}
+
+function closeAllFullpages() {
+  if (catchRaf) { cancelAnimationFrame(catchRaf); catchRaf = null; }
+  stopTrainGame();
+  document.querySelectorAll('.fullpage').forEach(fp => fp.classList.remove('show'));
+}
+
+document.querySelectorAll('.fp-back').forEach(b => b.onclick = () => closePage(b.dataset.close));
+
+function renderIaMap() {
+  const grid = $('iaGrid');
+  grid.innerHTML = '';
+  ALL_PAGES.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'ia-item';
+    el.innerHTML = `<b>[${p.code}] ${p.name}</b><span>${p.desc}</span>`;
+    el.onclick = () => {
+      $('modal-ia-map').classList.remove('show');
+      p.action();
+      toast(`已跳转至 [${p.code}] ${p.name}`);
+    };
+    grid.appendChild(el);
+  });
+}
+
+$('openIaMapBtn').onclick = () => {
+  renderIaMap();
+  $('modal-ia-map').classList.add('show');
+};
+$('brandHomeBtn').onclick = () => openPage('splash');
+
+/* ================= 开机启动页按钮 ================= */
+$('startEnterBtn').onclick = () => {
+  closePage('splash');
+  toast('欢迎回来，开启今日陪伴！');
+};
+
+$('splashDemoBtn').onclick = () => {
+  injectDemoData();
+  closePage('splash');
+};
+
+function injectDemoData() {
+  state.coins = 220;
+  state.steps = 7500;
+  state.eggSteps = 2500;
+  state.totalSteps = 7500;
+  state.hunger = 88;
+  state.mood = 92;
+  state.bag = { apple:8, fish:5, ball:6, soap:3, potion:6 };
+  state.eggs = [{ rarity:'rare' }, { rarity:'epic' }];
+  state.pets['p1'] = { id:'p1', name:'小方', species:'小方', stage:0, level:5, exp:10, maxHp:82, hp:82, atk:17, def:9, skills:['sparkleBeam'] };
+  state.pets['p2'] = { id:'p2', name:'电电鼠', species:'电电鼠', stage:1, level:6, exp:30, maxHp:98, hp:98, atk:25, def:11, skills:['thunderJolt','voltDash'] };
+  state.pets['p3'] = { id:'p3', name:'星月猫', species:'星月猫', stage:2, level:10, exp:0, maxHp:168, hp:168, atk:42, def:20, skills:['starlight','moonBless','galaxyNova'] };
+  state.pets['p4'] = { id:'p4', name:'海螺灵', species:'海螺灵', stage:1, level:5, exp:15, maxHp:112, hp:112, atk:18, def:15, skills:['bubbleJet','shellFort'] };
+  state.nextPetId = 5;
+  updateTaskProgress();
+  render();
+  toast('✨ 已注入演示数据（含新物种星月猫/电电鼠及满技能）');
+}
+
+/* ================= 漂浮星装饰 ================= */
+function spawnStars() {
+  const stage = $('mainStage');
+  if (!stage) return;
+  stage.querySelectorAll('.star').forEach(s => s.remove());
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 90 + '%';
+    s.style.top = Math.random() * 55 + '%';
+    s.style.animationDelay = (Math.random() * 6) + 's';
+    s.style.background = Math.random() > 0.5 ? '#fff8d6' : '#ffffff';
+    stage.appendChild(s);
+  }
+}
+setInterval(spawnStars, 7000);
+
+/* ================= LBS 假地图 ================= */
+const MAP_W = 600, MAP_H = 400, TILE = 20;
+let mapTerrain = [], mapSpawns = [];
+
+function generateMap() {
+  mapTerrain = [];
+  const cols = MAP_W / TILE, rows = MAP_H / TILE;
+  const seed = Math.random() * 1000;
+  for (let y = 0; y < rows; y++) {
+    mapTerrain[y] = [];
+    for (let x = 0; x < cols; x++) {
+      const n = (Math.sin(x * 0.3 + seed) + Math.cos(y * 0.35 + seed * 1.3) + Math.sin((x + y) * 0.2 + seed * 0.7)) / 3;
+      let t = 'grass';
+      if (n > 0.52) t = 'cave';
+      else if (n > 0.18) t = 'forest';
+      else if (n < -0.32) t = 'water';
+      mapTerrain[y][x] = t;
+    }
+  }
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    if (x < 2 || y < 2 || x >= cols-2 || y >= rows-2) mapTerrain[y][x] = 'forest';
+  }
+  refreshMapSpawns();
+  drawMap();
+}
+
+function refreshMapSpawns() {
+  mapSpawns = [];
+  const regions = ['grass','forest','water','cave'];
+  regions.forEach(region => {
+    const count = region === 'grass' ? 4 : region === 'forest' ? 3 : region === 'water' ? 3 : 2;
+    let placed = 0, tries = 0;
+    while (placed < count && tries < 220) {
+      tries++;
+      const x = 2 + Math.floor(Math.random() * (MAP_W/TILE - 4));
+      const y = 2 + Math.floor(Math.random() * (MAP_H/TILE - 4));
+      if (mapTerrain[y][x] !== region) continue;
+      const pool = Object.keys(PET_SPECIES).filter(k => PET_SPECIES[k].habitat === region);
+      if (pool.length === 0) continue;
+      const species = pool[Math.floor(Math.random() * pool.length)];
+      mapSpawns.push({ x: x * TILE + TILE/2, y: y * TILE + TILE/2, species, region });
+      placed++;
+    }
+  });
+}
+
+const TILE_COLORS = {
+  grass: ['#6db077', '#5ea168'],
+  forest: ['#3d7d4d', '#316b3f'],
+  water: ['#629ec2', '#528db0'],
+  cave: ['#736785', '#615673'],
+};
+
+function drawMap() {
+  const canvas = $('fakeMap');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  const cols = MAP_W / TILE, rows = MAP_H / TILE;
+
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    const t = mapTerrain[y][x];
+    const c = TILE_COLORS[t][(x + y) % 2];
+    ctx.fillStyle = c;
+    ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
+    if (t === 'forest' && (x * 7 + y * 3) % 5 === 0) {
+      ctx.fillStyle = '#245230'; ctx.fillRect(x*TILE+8, y*TILE+6, 4, 8);
+    } else if (t === 'water' && (x + y) % 4 === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(x*TILE+4, y*TILE+8, 8, 2);
+    } else if (t === 'cave' && (x * 3 + y) % 6 === 0) {
+      ctx.fillStyle = '#483e57'; ctx.fillRect(x*TILE+6, y*TILE+6, 6, 6);
+    } else if (t === 'grass' && (x * 2 + y * 3) % 7 === 0) {
+      ctx.fillStyle = '#4d8a56'; ctx.fillRect(x*TILE+8, y*TILE+10, 2, 4);
+    }
+  }
+
+  ctx.fillStyle = '#d4c9a8';
+  const midX = Math.floor(cols/2), midY = Math.floor(rows/2);
+  for (let x = 0; x < cols; x++) if (mapTerrain[midY][x] !== 'water') ctx.fillRect(x*TILE, midY*TILE, TILE, TILE);
+  for (let y = 0; y < rows; y++) if (mapTerrain[y][midX] !== 'water') ctx.fillRect(midX*TILE, y*TILE, TILE, TILE);
+
+  mapSpawns.forEach(sp => {
+    const data = PET_SPECIES[sp.species];
+    const cvs = document.createElement('canvas');
+    cvs.width = 16; cvs.height = 16;
+    drawPet(cvs, sp.species, 0);
+    ctx.fillStyle = '#53656a'; ctx.fillRect(sp.x - 15, sp.y - 15, 30, 30);
+    ctx.fillStyle = '#f0eddf'; ctx.fillRect(sp.x - 13, sp.y - 13, 26, 26);
+    ctx.drawImage(cvs, sp.x - 9, sp.y - 9, 18, 18);
+    const rc = data.rarity === 'epic' ? '#d49b27' : data.rarity === 'rare' ? '#4b89b8' : '#5b8c6b';
+    ctx.fillStyle = rc; ctx.fillRect(sp.x + 8, sp.y - 12, 5, 5);
+  });
+
+  ctx.strokeStyle = '#53656a'; ctx.lineWidth = 4; ctx.strokeRect(0, 0, MAP_W, MAP_H);
+}
+
+$('fakeMap').addEventListener('click', (e) => {
+  const canvas = $('fakeMap');
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = MAP_W / rect.width, scaleY = MAP_H / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
+  let hit = null, minDist = 28;
+  mapSpawns.forEach(sp => {
+    const d = Math.hypot(sp.x - mx, sp.y - my);
+    if (d < minDist) { minDist = d; hit = sp; }
+  });
+  if (hit) {
+    if (state.steps < 500) { toast('可用步数不足 500，先走走或点 +1000 模拟步数'); return; }
+    state.steps -= 500;
+    render();
+    mapSpawns = mapSpawns.filter(s => s !== hit);
+    drawMap();
+    openCatch(hit.species);
+  } else {
+    toast('请点击地图上的宠物头像进行探索');
+  }
+});
+
+$('regenMapBtn').onclick = () => { generateMap(); toast('🗺️ 已生成新的像素探索地图'); };
+$('refreshSpawnsBtn').onclick = () => { refreshMapSpawns(); drawMap(); toast('✨ 野生宠物刷新成功'); };
+
+/* ================= 核心全局渲染 ================= */
+function render() {
+  const pet = state.pets[state.activePet] || Object.values(state.pets)[0];
+  if (pet) {
+    state.activePet = pet.id;
+    ensurePetSkills(pet);
+  }
+
+  $('coinDisplay').textContent = state.coins;
+  $('topLevel').textContent = pet ? pet.level : 1;
+  $('topMood').textContent = state.mood;
+
+  $('stepsNum').textContent = state.steps.toLocaleString();
+  $('eggPoolMini').textContent = state.eggSteps;
+  $('stepsSlider').value = Math.min(20000, state.steps);
+
+  if (pet) {
+    const hpPct = Math.max(0, Math.min(100, (pet.hp / pet.maxHp) * 100));
+    $('mainHpBar').style.width = hpPct + '%';
+    $('mainHpVal').textContent = `${pet.hp}/${pet.maxHp}`;
+
+    const needExp = pet.level * 20;
+    $('stageExpBar').style.width = Math.min(100, (pet.exp / needExp) * 100) + '%';
+    $('stageExpText').textContent = `${pet.exp}/${needExp}`;
+    $('stageSkillBtn').textContent = `⚡ 技能栏 (${pet.skills.length}/3)`;
+
+    drawPet($('petCanvas'), pet.species, pet.stage);
+    drawPet($('splashCanvas'), pet.species, pet.stage);
+    const canEvoBadge = (pet.stage < 2 && pet.level >= EVO_LEVELS[pet.stage]) ? ' [可进化!]' : '';
+    $('petName').textContent = `${pet.name} · Lv.${pet.level}${pet.stage > 0 ? ' ★'.repeat(pet.stage) : ''}${canEvoBadge}`;
+  }
+
+  $('hungerBar').style.width = state.hunger + '%';
+  $('moodBar').style.width = state.mood + '%';
+  $('hungerVal').textContent = state.hunger;
+  $('moodVal').textContent = state.mood;
+
+  let tag = '😊 心情不错 · 陪伴中';
+  if (pet && pet.hp < pet.maxHp * 0.4) tag = '🤕 体力受损，需要喂食恢复';
+  else if (state.hunger < 25) tag = '🍽️ 肚子饿扁了…';
+  else if (state.mood < 25) tag = '😢 有点低落，摸摸它吧';
+  else if (state.hunger > 80 && state.mood > 80) tag = '🥳 超级开心！活力满满';
+  $('moodTag').textContent = tag;
+
+  const gainCoins = Math.floor(state.steps / 1000);
+  $('convertBtn').disabled = gainCoins <= 0;
+  $('convertBtn').textContent = gainCoins > 0
+    ? `兑换金币（消耗 ${gainCoins * 1000} 步 → 得 ${gainCoins}🪙）`
+    : '可用步数不足 1000';
+
+  renderDex();
+  renderTask();
+  renderShop();
+  renderEgg();
+  renderBag();
+  renderPrep();
+  checkAchievements();
+  saveState();
+}
+
+$('stageSkillBtn').onclick = () => {
+  if (state.activePet) openDetail(state.activePet);
+};
+
+/* ================= 图鉴渲染 (10种宠物 + 属性徽章) ================= */
+function renderDex() {
+  const grid = $('dexGrid');
+  grid.innerHTML = '';
+  const allPets = Object.values(state.pets);
+  const speciesOwned = new Set(allPets.map(p => p.species));
+  const totalSpecies = Object.keys(PET_SPECIES).length;
+  $('dexCount').textContent = `${speciesOwned.size} / ${totalSpecies}`;
+  $('filterAllBtn').textContent = `全部 (${totalSpecies})`;
+
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.classList.toggle('filter-active', btn.dataset.filter === state.dexFilter);
+  });
+
+  Object.keys(PET_SPECIES).forEach(speciesKey => {
+    const sp = PET_SPECIES[speciesKey];
+    const owned = speciesOwned.has(speciesKey);
+    if (state.dexFilter === 'owned' && !owned) return;
+    if (state.dexFilter === 'rare' && sp.rarity === 'common') return;
+
+    const pet = allPets.find(p => p.species === speciesKey);
+    const el = document.createElement('div');
+    el.className = 'item ' + (owned ? (pet.id === state.activePet ? 'owned use' : 'owned') : 'locked') +
+      (sp.rarity === 'rare' ? ' rarity-rare' : sp.rarity === 'epic' ? ' rarity-epic' : '');
+
+    // 元素小标
+    const elem = ELEMENT_INFO[sp.elem] || ELEMENT_INFO.light;
+    const elemTag = document.createElement('span');
+    elemTag.className = 'elem-badge';
+    elemTag.style.background = elem.color;
+    elemTag.textContent = elem.name;
+    el.appendChild(elemTag);
+
+    const cvs = document.createElement('canvas');
+    cvs.width = 16; cvs.height = 16;
+    cvs.style.cssText = 'width:44px;height:44px;image-rendering:pixelated;' + (owned ? '' : 'filter:grayscale(1) brightness(.35)');
+    drawPet(cvs, speciesKey, owned ? pet.stage : 0);
+    el.appendChild(cvs);
+
+    const nameDiv = document.createElement('div');
+    nameDiv.style.fontSize = '9px';
+    nameDiv.style.fontWeight = 'bold';
+    nameDiv.textContent = owned ? pet.name : `??? (${sp.rarity==='epic'?'史诗':sp.rarity==='rare'?'稀有':'普通'})`;
+    el.appendChild(nameDiv);
+
+    if (pet) {
+      const lv = document.createElement('span');
+      lv.className = 'lv';
+      lv.textContent = `Lv.${pet.level}${pet.stage>0?'★'.repeat(pet.stage):''}`;
+      el.appendChild(lv);
+      if (pet.id === state.activePet) {
+        const tag = document.createElement('span');
+        tag.className = 'count';
+        tag.textContent = '出战';
+        el.appendChild(tag);
+      }
+      el.onclick = () => openDetail(pet.id);
+    } else {
+      const habName = { grass:'草地', forest:'森林', water:'水域', cave:'山洞' }[sp.habitat] || '野外';
+      el.onclick = () => toast(`未解锁！前往【P03 探索地图】的「${habName}」区域寻找吧`);
+    }
+    grid.appendChild(el);
+  });
+}
+
+document.querySelectorAll('[data-filter]').forEach(b => {
+  b.onclick = () => { state.dexFilter = b.dataset.filter; renderDex(); };
+});
+
+function renderTask() {
+  const list = $('taskList');
+  list.innerHTML = '';
+  state.tasks.forEach(t => {
+    const done = t.progress >= t.goal;
+    const el = document.createElement('div');
+    el.className = 'task-item' + (done ? ' done' : '');
+    el.innerHTML = `<div class="check">${done ? '✓' : ''}</div>
+      <div class="info"><div class="t">${t.text}</div><div class="p">进度: ${Math.min(t.progress,t.goal)} / ${t.goal}</div></div>
+      <div class="reward">${done ? (t.claimed ? '已领取' : '点此领奖') : t.reward}</div>`;
+    if (done && !t.claimed) { el.style.cursor = 'pointer'; el.onclick = () => claimTask(t); }
+    list.appendChild(el);
+  });
+  const al = $('achieveList');
+  al.innerHTML = '';
+  state.achievements.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'task-item' + (a.done ? ' done' : '');
+    el.innerHTML = `<div class="check">${a.done ? '✓' : ''}</div>
+      <div class="info"><div class="t">${a.text}</div></div><div class="reward">${a.done ? '🏆 已达成' : '未解锁'}</div>`;
+    al.appendChild(el);
+  });
+}
+
+function renderShop() {
+  const list = $('shopList');
+  list.innerHTML = '';
+  Object.entries(ITEMS).forEach(([key,it]) => {
+    const el = document.createElement('div');
+    el.className = 'shop-item';
+    el.innerHTML = `<span class="emoji">${it.emoji}</span>
+      <div class="info"><div class="t">${it.name}</div><div class="d">${it.desc}</div></div>
+      <button class="buy-btn">🪙${it.price}</button>`;
+    el.querySelector('.buy-btn').onclick = () => showShopModal(key);
+    list.appendChild(el);
+  });
+}
+
+function showShopModal(key) {
+  const it = ITEMS[key];
+  $('shopModalTitle').textContent = it.name;
+  $('shopModalEmoji').textContent = it.emoji;
+  $('shopModalDesc').textContent = `${it.desc}｜单价 🪙${it.price}`;
+  $('shopModalBuy').onclick = () => { buyItem(key); $('modal-shop').classList.remove('show'); };
+  $('modal-shop').classList.add('show');
+}
+
+function renderEgg() {
+  $('eggProgressText').textContent = `${state.eggSteps} / 3000 步`;
+  $('eggProgress').style.width = Math.min(100, state.eggSteps/3000*100) + '%';
+  $('eggHatchBtn').disabled = state.eggSteps < 500;
+  $('eggHatchBtn').textContent = state.eggSteps >= 500 ? '凝聚宠物蛋（消耗 500 孵蛋步数）' : '孵蛋池步数不足 500';
+  const list = $('eggList');
+  list.innerHTML = '';
+  if (state.eggs.length === 0) {
+    list.innerHTML = '<div class="hint">暂无待孵化宠物蛋。上方消耗步数凝聚，或前往商城购买。</div>';
+  } else {
+    state.eggs.forEach((e,i) => {
+      const el = document.createElement('div');
+      el.className = 'shop-item';
+      const label = e.rarity==='rare'?'稀有闪光蛋':e.rarity==='epic'?'史诗龙纹蛋':'普通像素蛋';
+      el.innerHTML = `<span class="emoji">🥚</span>
+        <div class="info"><div class="t">${label}</div>
+        <div class="d">已准备就绪，点击立即破壳</div></div><button class="buy-btn">破壳孵化</button>`;
+      el.querySelector('button').onclick = () => hatchEgg(i);
+      list.appendChild(el);
+    });
+  }
+}
+
+function renderBag() {
+  const groups = { food:$('bagFood'), toy:$('bagToy'), battle:$('bagBattle') };
+  Object.values(groups).forEach(g => g.innerHTML = '');
+  Object.entries(state.bag).forEach(([key,count]) => {
+    if (count <= 0) return;
+    const it = ITEMS[key];
+    if (!it || it.type === 'egg') return;
+    const g = groups[it.type] || groups.food;
+    const el = document.createElement('div');
+    el.className = 'item use';
+    el.innerHTML = `<span class="emoji">${it.emoji}</span><b>${it.name}</b><span class="count">×${count}</span>`;
+    el.onclick = () => useItem(key);
+    g.appendChild(el);
+  });
+  Object.values(groups).forEach(g => {
+    if (g.children.length === 0) g.innerHTML = '<div class="hint">该分类暂无道具</div>';
+  });
+}
+
+function renderPrep() {
+  const list = $('prepPetList');
+  list.innerHTML = '';
+  Object.values(state.pets).forEach(p => {
+    ensurePetSkills(p);
+    const el = document.createElement('div');
+    el.className = 'pet-option' + (p.id === state.prepSelected ? ' selected' : '');
+    const cvs = document.createElement('canvas');
+    cvs.width = 16; cvs.height = 16;
+    drawPet(cvs, p.species, p.stage);
+    el.appendChild(cvs);
+
+    const skillNames = p.skills.map(sid => SKILLS[sid] ? SKILLS[sid].name : '').filter(Boolean).join(' / ') || '仅基础攻击';
+    const info = document.createElement('div');
+    info.style.flex = '1';
+    info.innerHTML = `<div>${p.name} Lv.${p.level}${p.stage>0?'★'.repeat(p.stage):''} · HP ${p.hp}/${p.maxHp}</div>
+      <div style="font-size:9px;color:#62576e;margin-top:2px;">⚡ 已装技能：${skillNames}</div>`;
+    el.appendChild(info);
+
+    el.onclick = () => { state.prepSelected = p.id; renderPrep(); };
+    list.appendChild(el);
+  });
+  const diff = $('prepDifficulty');
+  diff.innerHTML = '';
+  [{ k:'easy', t:'简单训练', d:'Lv-1' },{ k:'normal', t:'标准匹配', d:'Lv±1' },{ k:'hard', t:'精英挑战', d:'Lv+2' }].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'item' + (state.prepDifficulty === d.k ? ' owned use' : '');
+    el.innerHTML = `<span class="emoji">${d.k==='easy'?'🟢':d.k==='normal'?'🟡':'🔴'}</span><b>${d.t}</b><span style="font-size:9px">${d.d}</span>`;
+    el.onclick = () => { state.prepDifficulty = d.k; renderPrep(); };
+    diff.appendChild(el);
+  });
+}
+
+/* ================= 道具使用与步数兑换 ================= */
+function useItem(key) {
+  if (!state.bag[key] || state.bag[key] <= 0) return;
+  const it = ITEMS[key];
+  const pet = state.pets[state.activePet];
+  if (it.type === 'food') {
+    state.hunger = Math.min(100, state.hunger + it.value);
+    state.mood = Math.min(100, state.mood + 5);
+    let hpMsg = '';
+    if (pet && it.hpHeal) {
+      const oldHp = pet.hp;
+      pet.hp = Math.min(pet.maxHp, pet.hp + it.hpHeal);
+      const healed = pet.hp - oldHp;
+      if (healed > 0) hpMsg = `，HP +${healed}`;
+    }
+    playBeep(740, 0.08);
+    toast(`${it.emoji} 饱食度 +${it.value}${hpMsg}`);
+  } else if (it.type === 'toy') {
+    state.mood = Math.min(100, state.mood + it.value);
+    playBeep(820, 0.08);
+    toast(`${it.emoji} 心情 +${it.value}`);
+  } else {
+    toast('对战恢复药水请在【P12 竞技场】中使用');
+    return;
+  }
+  state.bag[key]--;
+  if (state.bag[key] <= 0) delete state.bag[key];
+  render();
+}
+
+function buyItem(key) {
+  const it = ITEMS[key];
+  if (state.coins < it.price) { toast('金币不足，多走步数或去特训吧！'); return; }
+  state.coins -= it.price;
+  playBeep(880, 0.09);
+  if (it.type === 'egg') {
+    state.eggs.push({ rarity: it.rarity });
+    toast(`购得 ${it.name}，已放入孵化屋`);
+  } else {
+    state.bag[key] = (state.bag[key] || 0) + 1;
+    toast(`购得 ${it.emoji}${it.name}`);
+  }
+  render();
+}
+
+function claimTask(t) {
+  t.claimed = true;
+  playBeep(960, 0.12);
+  if (t.reward.includes('🪙')) {
+    const n = parseInt(t.reward);
+    state.coins += n;
+    toast(`领取任务奖励：+${n}🪙`);
+  } else if (t.reward.includes('蛋')) {
+    state.eggs.push({ rarity:'rare' });
+    toast('领取任务奖励：1 个稀有闪光蛋！');
+  }
+  render();
+}
+
+$('stepsSlider').oninput = e => {
+  const newVal = +e.target.value;
+  const delta = newVal - state.steps;
+  state.steps = newVal;
+  if (delta > 0) {
+    state.eggSteps = Math.min(3000, state.eggSteps + delta);
+    state.totalSteps += delta;
+  }
+  updateTaskProgress();
+  render();
+};
+
+$('simStepBtn').onclick = () => {
+  state.steps += 1000;
+  state.eggSteps = Math.min(3000, state.eggSteps + 1000);
+  state.totalSteps += 1000;
+  playBeep(700, 0.07);
+  updateTaskProgress();
+  render();
+  toast('👟 模拟行走 +1000 步（同步注入孵蛋池）');
+};
+
+$('convertBtn').onclick = () => {
+  const gain = Math.floor(state.steps / 1000);
+  if (gain <= 0) return;
+  state.steps -= gain * 1000;
+  state.coins += gain;
+  playBeep(860, 0.1);
+  toast(`💰 消耗 ${gain*1000} 步，兑换 +${gain}🪙！`);
+  render();
+};
+
+function updateTaskProgress() {
+  const walk = state.tasks.find(t => t.id === 'walk5000');
+  if (walk) walk.progress = state.totalSteps;
+  checkAchievements();
+}
+
+function checkAchievements() {
+  state.achievements[1].done = Object.keys(state.pets).length >= 4;
+  state.achievements[2].done = Object.values(state.pets).some(p => p.level >= 5);
+}
+
+/* ================= 详情页与技能栏装配系统 [P06] ================= */
+function openDetail(petId) { renderDetail(petId); openPage('detail'); }
+
+function toggleEquipSkill(petId, skillId) {
+  const p = state.pets[petId];
+  if (!p) return;
+  ensurePetSkills(p);
+  const idx = p.skills.indexOf(skillId);
+  if (idx >= 0) {
+    p.skills.splice(idx, 1);
+    playBeep(460, 0.06);
+    toast(`已卸下技能【${SKILLS[skillId].name}】`);
+  } else {
+    if (p.skills.length >= 3) {
+      toast('技能栏已满（最多装配 3 个），请先卸下一个技能');
+      return;
+    }
+    p.skills.push(skillId);
+    playBeep(780, 0.08);
+    toast(`⚡ 已装配技能【${SKILLS[skillId].name}】！`);
+  }
+  saveState();
+  renderDetail(petId);
+  render();
+}
+
+function renderDetail(petId) {
+  const p = state.pets[petId];
+  if (!p) return;
+  ensurePetSkills(p);
+  const sp = PET_SPECIES[p.species];
+  const elem = ELEMENT_INFO[sp.elem] || ELEMENT_INFO.light;
+  const rarityName = sp.rarity === 'epic' ? '史诗 (Gold)' : sp.rarity === 'rare' ? '稀有 (Blue)' : '普通 (Common)';
+  const stageName = ['初阶幼体','二阶成长期','终阶完全体'][p.stage];
+  $('detailTitle').textContent = `${p.name} · 档案与技能`;
+
+  const canEvolve = p.stage < 2 && p.level >= EVO_LEVELS[p.stage];
+  const evoInfo = p.stage >= 2 ? '已达到最终完全体形态' : `进化条件：Lv.${EVO_LEVELS[p.stage]}（当前 Lv.${p.level}）`;
+
+  // 渲染 3 个出战技能槽位
+  let slotsHtml = '';
+  for (let i = 0; i < 3; i++) {
+    const sid = p.skills[i];
+    if (sid && SKILLS[sid]) {
+      const sk = SKILLS[sid];
+      slotsHtml += `<div class="skill-slot equipped" onclick="toggleEquipSkill('${petId}','${sid}')" title="点击卸下">
+        <div style="font-size:15px;">${sk.icon}</div>
+        <b style="color:#46565a;">${sk.name}</b>
+        <span style="font-size:8px;color:#78898d;">CD:${sk.cd}回合</span>
+      </div>`;
+    } else {
+      slotsHtml += `<div class="skill-slot">
+        <span style="font-size:13px;opacity:.5;">＋</span>
+        <span style="color:#8b9490;">空技能槽 ${i+1}</span>
+      </div>`;
+    }
+  }
+
+  // 渲染物种专属技能池（随进化解锁）
+  let poolHtml = '';
+  (sp.skillPool || []).forEach(item => {
+    const sk = SKILLS[item.id];
+    if (!sk) return;
+    const unlocked = p.stage >= item.unlockStage;
+    const equipped = p.skills.includes(item.id);
+    const skElem = ELEMENT_INFO[sk.elem] || elem;
+    poolHtml += `<div class="skill-card ${equipped ? 'equipped' : ''} ${unlocked ? '' : 'locked'}">
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:bold;">
+          <span class="skill-tag" style="background:${skElem.color}">${skElem.name}</span>
+          ${sk.icon} ${sk.name} <span style="font-size:9px;color:#78898d;">(CD:${sk.cd}回合)</span>
+        </div>
+        <div style="font-size:9px;color:#68787a;margin-top:3px;">${sk.desc}</div>
+      </div>
+      ${unlocked
+        ? `<button class="btn sm ${equipped ? 'ghost' : 'gold'}" style="width:auto;" onclick="toggleEquipSkill('${petId}','${item.id}')">${equipped ? '卸下' : '装配'}</button>`
+        : `<span style="font-size:9px;color:#8b9490;font-weight:bold;">${item.unlockStage+1}阶进化解锁</span>`
+      }
+    </div>`;
+  });
+
+  $('detailBody').innerHTML = `
+    <div class="detail-stage"><canvas class="detail-canvas" id="detailCanvas" width="16" height="16"></canvas></div>
+    
+    <!-- 技能栏装配系统模块 -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <h3 style="margin:0;">⚡ 随身技能栏 (${p.skills.length}/3)</h3>
+        <span style="font-size:9px;color:#75878a;">点击已装槽位可卸下</span>
+      </div>
+      <div class="skill-slots-row">${slotsHtml}</div>
+      <div style="font-size:10px;font-weight:bold;color:#736661;margin:10px 0 6px;">▸ 物种天赋技能池（随进化解锁）</div>
+      ${poolHtml}
+    </div>
+
+    <div class="card">
+      <h3>▸ 六维属性档案</h3>
+      <div class="stat-row"><span class="k">元素与阶段</span><span class="v">${elem.name}系 · ${stageName}（${p.stage+1}/3）</span></div>
+      <div class="stat-row"><span class="k">当前等级</span><span class="v">Lv.${p.level} (${p.exp}/${p.level*20} EXP)</span></div>
+      <div class="stat-row"><span class="k">生命值 (HP)</span><span class="v">${p.hp} / ${p.maxHp}</span></div>
+      <div class="stat-row"><span class="k">攻击 / 防御</span><span class="v">ATK ${p.atk} / DEF ${p.def}</span></div>
+      <div class="stat-row"><span class="k">稀有度评级</span><span class="v">${rarityName}</span></div>
+    </div>
+
+    ${canEvolve
+      ? `<button class="btn gold" id="evoBtn">✨ 满足进化条件！进入进化仪式 [P07]</button>`
+      : `<button class="btn ghost" id="evoPreviewBtn">🔮 预览下一阶段进化形态 [P07] (${evoInfo})</button>`}
+    <div class="grid2" style="margin-top:8px;">
+      <button class="btn gold" id="setActiveBtn" style="margin-top:0;">⭐ 设为出战</button>
+      <button class="btn blue" id="renameBtn" style="margin-top:0;">✏️ 宠物改名</button>
+      <button class="btn" id="feedBtn" style="margin-top:0;">🍎 喂食回血</button>
+      <button class="btn purple" id="playBtn" style="margin-top:0;">🎾 互动陪玩</button>
+    </div>
+  `;
+  drawPet($('detailCanvas'), p.species, p.stage);
+  if (canEvolve) $('evoBtn').onclick = () => openEvoPage(petId, false);
+  if ($('evoPreviewBtn')) $('evoPreviewBtn').onclick = () => openEvoPage(petId, true);
+
+  $('setActiveBtn').onclick = () => {
+    state.activePet = petId; state.prepSelected = petId;
+    toast(`${p.name} 已设为当前陪伴与出战伙伴`); render(); closePage('detail');
+  };
+  $('renameBtn').onclick = () => openRename(petId);
+  $('feedBtn').onclick = () => {
+    const foodKey = Object.keys(state.bag).find(k => ITEMS[k] && ITEMS[k].type === 'food' && state.bag[k] > 0);
+    if (!foodKey) { toast('背包里没有食物了，去商城买点吧'); return; }
+    useItem(foodKey); renderDetail(petId);
+  };
+  $('playBtn').onclick = () => {
+    state.mood = Math.min(100, state.mood + 8);
+    playBeep(760, 0.08);
+    toast(`${p.name} 开心地转了个圈！心情 +8`); renderDetail(petId); render();
+  };
+}
+
+/* ================= 进化页 [P07] ================= */
+function openEvoPage(petId, previewOnly = false) {
+  const p = state.pets[petId];
+  const sp = PET_SPECIES[p.species];
+  if (p.stage >= 2) { toast('该宠物已是最终形态！'); return; }
+  const cur = sp.stages[p.stage];
+  const next = sp.stages[p.stage + 1];
+  const canEvo = p.level >= EVO_LEVELS[p.stage];
+  const nextSkillObj = (sp.skillPool || []).find(s => s.unlockStage === p.stage + 1);
+  const nextSkillName = nextSkillObj && SKILLS[nextSkillObj.id] ? `${SKILLS[nextSkillObj.id].icon} ${SKILLS[nextSkillObj.id].name}` : '全属性跃升';
+
+  $('evoBody').innerHTML = `
+    <div class="evo-stage" id="evoStageEl">
+      <div style="font-size:11px;color:#fff8e8;font-weight:bold;letter-spacing:2px;margin-bottom:8px;">— 形态进化预览 —</div>
+      <canvas class="evo-pet-big" id="evoPetLeft" width="16" height="16"></canvas>
+      <div class="evo-arrow">⬇ 进化跃迁 ⬇</div>
+      <canvas class="evo-pet-big" id="evoPetRight" width="16" height="16" style="opacity:.85;"></canvas>
+      <div style="font-size:13px;font-weight:bold;margin-top:10px;color:#fff8e8;text-shadow:1px 1px #46565a;">${cur.name} → ${next.name}</div>
+      <div class="evo-stats">
+        <div>HP <span>${cur.hp}</span>→<span>${next.hp}</span></div>
+        <div>攻击 <span>${cur.atk}</span>→<span>${next.atk}</span></div>
+        <div>解锁新技能 <span>${nextSkillName}</span></div>
+      </div>
+    </div>
+    <div class="hint" style="text-align:center;margin-top:10px;">
+      ${canEvo ? '条件已满足！点击下方按钮启动粒子进化仪式。' : `需要等级达到 Lv.${EVO_LEVELS[p.stage]} 才能进化（当前 Lv.${p.level}，可去【P10 敏捷特训】快速升级）。`}
+    </div>
+    <button class="btn gold" id="confirmEvoBtn" style="margin-top:12px;" ${canEvo ? '' : 'disabled'}>
+      ${canEvo ? '✨ 启动进化仪式！' : `需达到 Lv.${EVO_LEVELS[p.stage]} 解锁`}
+    </button>
+  `;
+  drawPet($('evoPetLeft'), p.species, p.stage);
+  drawPet($('evoPetRight'), p.species, p.stage + 1);
+  openPage('evo');
+  if (canEvo) $('confirmEvoBtn').onclick = () => playEvoAnimation(petId);
+}
+
+function playEvoAnimation(petId) {
+  const p = state.pets[petId];
+  const sp = PET_SPECIES[p.species];
+  ensurePetSkills(p);
+  const btn = $('confirmEvoBtn');
+  if (btn) btn.disabled = true;
+  const stageEl = $('evoStageEl');
+  const leftCvs = $('evoPetLeft');
+  const rightCvs = $('evoPetRight');
+  if (leftCvs) leftCvs.classList.add('evolving');
+  playBeep(520, 0.1);
+
+  for (let i = 0; i < 26; i++) {
+    const pt = document.createElement('div');
+    pt.className = 'evo-particle';
+    pt.style.left = '50%'; pt.style.top = '42%';
+    pt.style.background = i % 2 ? '#ffcd75' : '#ffffff';
+    stageEl.appendChild(pt);
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 60 + Math.random() * 85;
+    const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
+    pt.animate([
+      { transform: 'translate(0,0) scale(1)', opacity: 1 },
+      { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
+    ], { duration: 900 + Math.random() * 400, easing: 'ease-out' });
+    setTimeout(() => pt.remove(), 1400);
+  }
+
+  setTimeout(() => {
+    p.stage++;
+    const newStage = sp.stages[p.stage];
+    if (p.name === sp.stages[p.stage - 1].name) p.name = newStage.name;
+    p.maxHp = newStage.hp + p.level * 4;
+    p.atk = newStage.atk + p.level;
+    p.def = newStage.def + Math.floor(p.level / 2);
+    p.hp = p.maxHp;
+
+    // 自动解锁并装配新阶段技能
+    const unlockedItem = (sp.skillPool || []).find(s => s.unlockStage === p.stage);
+    let skillToast = '';
+    if (unlockedItem && !p.skills.includes(unlockedItem.id) && p.skills.length < 3) {
+      p.skills.push(unlockedItem.id);
+      skillToast = `并领悟新技能【${SKILLS[unlockedItem.id].name}】！`;
+    }
+
+    const t = state.tasks.find(x => x.id === 'evolve1');
+    if (t && t.progress < 1) t.progress = 1;
+    state.achievements[4].done = true;
+
+    playBeep(980, 0.2);
+    if (rightCvs) rightCvs.style.opacity = 1;
+    if (leftCvs) { drawPet(leftCvs, p.species, p.stage); leftCvs.classList.remove('evolving'); }
+    toast(`✨ 进化成功！${newStage.name} 诞生${skillToast}`);
+    setTimeout(() => {
+      closePage('evo');
+      renderDetail(petId);
+      render();
+    }, 1150);
+  }, 950);
+}
+
+/* 改名弹窗 */
+let renameTarget = null;
+function openRename(petId) {
+  renameTarget = petId;
+  $('renameInput').value = state.pets[petId].name;
+  $('modal-rename').classList.add('show');
+  setTimeout(() => $('renameInput').focus(), 100);
+}
+$('renameConfirm').onclick = () => {
+  const val = $('renameInput').value.trim();
+  if (!val) { toast('名字不能为空'); return; }
+  state.pets[renameTarget].name = val;
+  $('modal-rename').classList.remove('show');
+  render();
+  renderDetail(renameTarget);
+  toast('宠物改名成功！');
+};
+
+/* ================= 快捷入口绑定 ================= */
+$('gotoBagBtn').onclick = () => openPage('bag');
+$('gearBtn').onclick = () => openPage('settings');
+$('gotoMapBtn').onclick = () => switchTab('map');
+$('gotoEggBtn').onclick = () => openPage('egg');
+$('gotoTrainBtn').onclick = () => openPage('train');
+$('gotoBattlePrepareBtn').onclick = () => { renderPrep(); openPage('prep'); };
+
+/* ================= 捕捉 QTE [P04] ================= */
+let catchRaf = null, catchPos = 0, catchDir = 1, catchTarget = null;
+let catchZoneCenter = 50, catchAttempts = 3, catchSpeed = 1.0;
+
+function openCatch(species) {
+  catchTarget = species;
+  const sp = PET_SPECIES[species];
+  drawPet($('catchPetCanvas'), species, 0);
+  $('catchPetName').textContent = `野生 ${sp.stages[0].name}（${sp.rarity==='epic'?'史诗':sp.rarity==='rare'?'稀有':'普通'}）`;
+  catchAttempts = 3;
+  $('catchChance').textContent = '剩余捕捉机会：3';
+  $('catchBtn').disabled = false;
+  $('catchBtn').textContent = '🎯 投掷像素球！';
+  const zoneW = sp.rarity === 'epic' ? 16 : sp.rarity === 'rare' ? 20 : 25;
+  catchZoneCenter = 22 + Math.random() * 56;
+  $('catchZone').style.left = (catchZoneCenter - zoneW/2) + '%';
+  $('catchZone').style.width = zoneW + '%';
+  $('catchCursor').style.left = '0%';
+  catchPos = 0; catchDir = 1;
+  catchSpeed = sp.rarity === 'epic' ? 1.45 : sp.rarity === 'rare' ? 1.15 : 0.95;
+  openPage('catch');
+  if (catchRaf) cancelAnimationFrame(catchRaf);
+  loopCatch();
+}
+
+function loopCatch() {
+  catchPos += catchDir * catchSpeed;
+  if (catchPos >= 100) { catchPos = 100; catchDir = -1; }
+  if (catchPos <= 0) { catchPos = 0; catchDir = 1; }
+  $('catchCursor').style.left = catchPos + '%';
+  catchRaf = requestAnimationFrame(loopCatch);
+}
+
+$('catchBtn').onclick = () => {
+  if (!catchTarget) return;
+  cancelAnimationFrame(catchRaf);
+  catchRaf = null;
+  const sp = PET_SPECIES[catchTarget];
+  const zoneW = sp.rarity === 'epic' ? 16 : sp.rarity === 'rare' ? 20 : 25;
+  const dist = Math.abs(catchPos - catchZoneCenter);
+  const directHit = dist <= zoneW / 2;
+  const edgeHit = dist <= zoneW / 2 + 4;
+  // 修复：精准命中绿区必抓，擦边按稀有度概率成功
+  const success = directHit || (edgeHit && Math.random() < sp.catchRate);
+  if (success) {
+    const id = 'p' + (state.nextPetId++);
+    const s0 = sp.stages[0];
+    state.pets[id] = {
+      id, name:s0.name, species:catchTarget, stage:0, level:1, exp:0,
+      maxHp:s0.hp, hp:s0.hp, atk:s0.atk, def:s0.def,
+      skills: getDefaultSkills(catchTarget, 0)
+    };
+    const task = state.tasks.find(t => t.id === 'catch1');
+    if (task && task.progress < 1) task.progress = 1;
+    state.achievements[0].done = true;
+    playBeep(920, 0.15);
+    toast(`🎉 捕捉成功！${s0.name} 已收入图鉴`);
+    closePage('catch');
+    catchTarget = null;
+    render();
+  } else {
+    playBeep(260, 0.12);
+    $('catchPetCanvas').classList.add('hit-shake');
+    setTimeout(() => $('catchPetCanvas').classList.remove('hit-shake'), 300);
+    catchAttempts--;
+    $('catchChance').textContent = `剩余捕捉机会：${catchAttempts}`;
+    if (catchAttempts <= 0) {
+      toast('野生宠物逃进草丛了…');
+      setTimeout(() => { closePage('catch'); catchTarget = null; }, 550);
+    } else {
+      toast(edgeHit ? '擦边球！它挣脱了像素球…' : '偏离绿色判定区！再试一次');
+      $('catchBtn').disabled = true;
+      setTimeout(() => {
+        if (!catchTarget) return;
+        catchPos = 0; catchDir = 1;
+        $('catchCursor').style.left = '0%';
+        loopCatch();
+        $('catchBtn').disabled = false;
+      }, 450);
+    }
+  }
+};
+
+/* ================= 孵化屋 [P09] ================= */
+$('eggHatchBtn').onclick = () => {
+  if (state.eggSteps < 500) return;
+  state.eggSteps -= 500;
+  const r = Math.random();
+  const rarity = r < 0.65 ? 'common' : r < 0.9 ? 'rare' : 'epic';
+  state.eggs.push({ rarity });
+  playBeep(780, 0.1);
+  toast(`🥚 成功凝聚一颗${rarity==='epic'?'史诗龙纹':rarity==='rare'?'稀有闪光':'普通像素'}蛋！`);
+  render();
+};
+
+function hatchEgg(index) {
+  const egg = state.eggs[index];
+  if (!egg) return;
+  const pool = Object.keys(PET_SPECIES).filter(k => {
+    if (egg.rarity === 'epic') return PET_SPECIES[k].rarity === 'epic';
+    if (egg.rarity === 'rare') return PET_SPECIES[k].rarity === 'rare';
+    return PET_SPECIES[k].rarity === 'common';
+  });
+  const chosen = pool[Math.floor(Math.random()*pool.length)];
+  state.eggs.splice(index,1);
+  const id = 'p' + (state.nextPetId++);
+  const sp = PET_SPECIES[chosen];
+  const s0 = sp.stages[0];
+  state.pets[id] = {
+    id, name:s0.name, species:chosen, stage:0, level:1, exp:0,
+    maxHp:s0.hp, hp:s0.hp, atk:s0.atk, def:s0.def,
+    skills: getDefaultSkills(chosen, 0)
+  };
+  const task = state.tasks.find(t => t.id === 'catch1');
+  if (task && task.progress < 1) task.progress = 1;
+  playBeep(950, 0.16);
+  toast(`🎉 咔嚓！孵出了 ${s0.name}！`);
+  render();
+}
+
+/* ================= 界面 10：敏捷特训迷你游戏 ================= */
+let trainRunning = false, trainRaf = null, trainTimer = null;
+let trainScore = 0, trainTimeLeft = 20, playerX = 140, fallingObjs = [];
+
+function drawTrainScene() {
+  const cvs = $('trainCanvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#bfe5eb'; ctx.fillRect(0, 0, 320, 210);
+  ctx.fillStyle = '#86b98e'; ctx.fillRect(0, 210, 320, 50);
+  ctx.fillStyle = '#53656a'; ctx.fillRect(0, 208, 320, 3);
+
+  const pet = state.pets[state.activePet] || Object.values(state.pets)[0];
+  const pCvs = document.createElement('canvas');
+  pCvs.width = 16; pCvs.height = 16;
+  drawPet(pCvs, pet.species, pet.stage);
+  ctx.drawImage(pCvs, playerX, 174, 36, 36);
+
+  ctx.font = '20px monospace';
+  ctx.textAlign = 'center';
+  fallingObjs.forEach(o => {
+    ctx.fillText(o.type === 'apple' ? '🍎' : '💣', o.x, o.y);
+  });
+}
+
+function startTrainGame() {
+  if (trainRunning) return;
+  trainRunning = true;
+  trainScore = 0;
+  trainTimeLeft = 20;
+  playerX = 142;
+  fallingObjs = [];
+  $('trainScore').textContent = '0';
+  $('trainTime').textContent = '20';
+  $('trainStartBtn').disabled = true;
+  $('trainStartBtn').textContent = '特训进行中…';
+  playBeep(660, 0.08);
+
+  trainTimer = setInterval(() => {
+    trainTimeLeft--;
+    $('trainTime').textContent = trainTimeLeft;
+    if (trainTimeLeft <= 0) finishTrainGame();
+  }, 1000);
+
+  let frame = 0;
+  function loop() {
+    if (!trainRunning) return;
+    frame++;
+    if (frame % 26 === 0) {
+      fallingObjs.push({
+        x: 20 + Math.random() * 280,
+        y: 10,
+        vy: 2.3 + Math.random() * 1.4,
+        type: Math.random() < 0.72 ? 'apple' : 'bomb'
+      });
+    }
+    fallingObjs.forEach(o => { o.y += o.vy; });
+    fallingObjs = fallingObjs.filter(o => {
+      if (o.y >= 174 && o.y <= 212 && Math.abs(o.x - (playerX + 18)) < 24) {
+        if (o.type === 'apple') {
+          trainScore += 2;
+          playBeep(840, 0.05);
+        } else {
+          trainScore = Math.max(0, trainScore - 3);
+          playBeep(240, 0.1);
+        }
+        $('trainScore').textContent = trainScore;
+        return false;
+      }
+      return o.y < 255;
+    });
+    drawTrainScene();
+    trainRaf = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+function stopTrainGame() {
+  trainRunning = false;
+  clearInterval(trainTimer);
+  if (trainRaf) cancelAnimationFrame(trainRaf);
+  $('trainStartBtn').disabled = false;
+  $('trainStartBtn').textContent = '▶ 开始 20 秒特训（赚取 EXP 与金币）';
+}
+
+function finishTrainGame() {
+  stopTrainGame();
+  const pet = state.pets[state.activePet];
+  const expGain = Math.max(8, trainScore * 2);
+  const coinGain = Math.max(2, Math.floor(trainScore / 2));
+  pet.exp += expGain;
+  state.coins += coinGain;
+  state.hunger = Math.max(0, state.hunger - 5);
+  let leveled = false;
+  while (pet.exp >= pet.level * 20) {
+    pet.exp -= pet.level * 20;
+    pet.level++;
+    pet.maxHp += 8; pet.atk += 2; pet.def += 1; pet.hp = pet.maxHp;
+    leveled = true;
+  }
+  playBeep(920, 0.15);
+  toast(`🎯 特训结束！+${expGain} EXP，+${coinGain}🪙${leveled ? ' ⭐升级！' : ''}`);
+  render();
+}
+
+$('trainStartBtn').onclick = startTrainGame;
+$('trainLeftBtn').onclick = () => { playerX = Math.max(4, playerX - 28); drawTrainScene(); };
+$('trainRightBtn').onclick = () => { playerX = Math.min(280, playerX + 28); drawTrainScene(); };
+$('trainCanvas').addEventListener('pointermove', e => {
+  if (!trainRunning) return;
+  const rect = $('trainCanvas').getBoundingClientRect();
+  const relX = ((e.clientX - rect.left) / rect.width) * 320;
+  playerX = Math.max(4, Math.min(280, relX - 18));
+});
+window.addEventListener('keydown', e => {
+  if (!$('page-train').classList.contains('show')) return;
+  if (e.key === 'ArrowLeft') { playerX = Math.max(4, playerX - 24); drawTrainScene(); }
+  if (e.key === 'ArrowRight') { playerX = Math.min(280, playerX + 24); drawTrainScene(); }
+});
+
+/* ================= 回合制技能对战系统 [P11 & P12] ================= */
+let battle = null;
+
+$('startBattleBtn').onclick = () => {
+  const pet = state.pets[state.prepSelected];
+  if (!pet) { toast('请选择出战宠物'); return; }
+  if (pet.hp <= 0) { toast('这只宠物体力耗尽，请先喂食恢复！'); return; }
+  closePage('prep');
+  startBattle(state.prepSelected, state.prepDifficulty);
+};
+
+function startBattle(petId, difficulty) {
+  const pet = state.pets[petId] || Object.values(state.pets)[0];
+  ensurePetSkills(pet);
+  const pool = Object.keys(PET_SPECIES);
+  const enemySpecies = pool[Math.floor(Math.random()*pool.length)];
+  const sp = PET_SPECIES[enemySpecies];
+  const enemyStage = Math.min(2, Math.floor(Math.random() * (pet.stage + 1)));
+  const es = sp.stages[enemyStage];
+  let lvOffset = difficulty === 'easy' ? -1 : difficulty === 'hard' ? 2 : 0;
+  const lv = Math.max(1, pet.level + lvOffset + Math.floor(Math.random()*2));
+  const hp = es.hp + lv * 4;
+
+  // 组装技能栏：普攻 + 最多3个已装配技能
+  const activeSkills = ['tackle', ...pet.skills.slice(0, 3)];
+
+  battle = {
+    playerKey: pet.id,
+    player: { hp: pet.hp, maxHp: pet.maxHp, atk: pet.atk, def: pet.def, lv: pet.level, defending:false },
+    enemySpecies, enemyStage,
+    enemy: { hp, maxHp: hp, atk: es.atk + lv, def: es.def + Math.floor(lv/2), lv, defending:false, name:es.name },
+    skills: activeSkills,
+    cooldowns: {},
+    over: false,
+  };
+  drawPet($('battlePlayerCanvas'), pet.species, pet.stage);
+  drawPet($('battleEnemyCanvas'), enemySpecies, enemyStage);
+  $('battlePlayerName').textContent = `${pet.name} Lv.${pet.level}${pet.stage>0?'★'.repeat(pet.stage):''}`;
+  $('battleEnemyName').textContent = `${es.name} Lv.${lv}${enemyStage>0?'★'.repeat(enemyStage):''}`;
+  $('battleReward').textContent = '';
+  $('battleLog').innerHTML = `⚔️ 遭遇野生 ${es.name}！请从下方技能栏选择出招：`;
+  renderBattleSkillBar(true);
+  updateBattleUI();
+  openPage('battle');
+}
+
+function renderBattleSkillBar(enabled) {
+  const grid = $('battleSkillGrid');
+  if (!grid || !battle) return;
+  grid.innerHTML = '';
+  battle.skills.forEach(sid => {
+    const sk = SKILLS[sid] || SKILLS.tackle;
+    const cdLeft = battle.cooldowns[sid] || 0;
+    const btn = document.createElement('button');
+    btn.className = 'skill-battle-btn';
+    btn.disabled = !enabled || cdLeft > 0;
+    const elem = ELEMENT_INFO[sk.elem] || ELEMENT_INFO.light;
+    btn.innerHTML = `
+      <div class="sb-top">
+        <span>${sk.icon} ${sk.name}</span>
+        <span style="font-size:8px;padding:1px 4px;border-radius:3px;background:${cdLeft>0?'#8b9490':elem.color};color:#fff;">
+          ${cdLeft > 0 ? `CD:${cdLeft}` : (sk.power > 0 ? `${sk.power}x` : '辅助')}
+        </span>
+      </div>
+      <div class="sb-sub">${sk.desc.slice(0, 14)}${sk.desc.length>14?'…':''}</div>
+    `;
+    btn.onclick = () => executeSkill(sid);
+    grid.appendChild(btn);
+  });
+  $('btnDefend').disabled = !enabled;
+  $('btnHeal').disabled = !enabled;
+}
+
+function updateBattleUI() {
+  if (!battle) return;
+  $('playerHp').style.width = Math.max(0, battle.player.hp/battle.player.maxHp*100) + '%';
+  $('enemyHp').style.width = Math.max(0, battle.enemy.hp/battle.enemy.maxHp*100) + '%';
+  $('playerHpText').textContent = `${Math.max(0, battle.player.hp)}/${battle.player.maxHp}`;
+  $('enemyHpText').textContent = `${Math.max(0, battle.enemy.hp)}/${battle.enemy.maxHp}`;
+}
+
+function logBattle(m) {
+  const el = $('battleLog');
+  el.innerHTML += `<br>${m}`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function dmgCalc(atk, def, mult = 1.0, pierce = false) {
+  const effDef = pierce ? def * 0.2 : def * 0.45;
+  return Math.max(2, Math.floor((atk * mult - effDef) * (0.9 + Math.random() * 0.22)));
+}
+
+function tickCooldowns() {
+  if (!battle) return;
+  Object.keys(battle.cooldowns).forEach(k => {
+    if (battle.cooldowns[k] > 0) battle.cooldowns[k]--;
+  });
+}
+
+function executeSkill(skillId) {
+  if (!battle || battle.over) return;
+  const sk = SKILLS[skillId] || SKILLS.tackle;
+  if ((battle.cooldowns[skillId] || 0) > 0) return;
+
+  renderBattleSkillBar(false);
+  battle.player.defending = false;
+  tickCooldowns();
+  if (sk.cd > 0) battle.cooldowns[skillId] = sk.cd;
+
+  // 纯治愈技能
+  if (sk.effect === 'heal' && sk.power === 0) {
+    const healAmt = Math.max(8, Math.floor(battle.player.maxHp * 0.36));
+    battle.player.hp = Math.min(battle.player.maxHp, battle.player.hp + healAmt);
+    playBeep(820, 0.1);
+    $('battlePlayerCanvas').classList.add('heal-glow');
+    setTimeout(() => $('battlePlayerCanvas').classList.remove('heal-glow'), 450);
+    logBattle(`${sk.icon} 施放【${sk.name}】，恢复了 ${healAmt} 点生命值！`);
+  } else {
+    // 伤害计算
+    const isPierce = sk.effect === 'pierce';
+    let dmg = dmgCalc(battle.player.atk, battle.enemy.def, sk.power, isPierce);
+    const critChance = sk.effect === 'crit' ? 0.45 : 0.12;
+    const isCrit = Math.random() < critChance;
+    if (isCrit) dmg = Math.floor(dmg * 1.45);
+
+    let extraLog = '';
+    if (battle.enemy.defending) {
+      dmg = Math.max(1, Math.floor(dmg * 0.5));
+      extraLog += '（敌方防御减半）';
+    }
+    if (isCrit) extraLog += ' 💥暴击!';
+
+    battle.enemy.hp -= dmg;
+    playBeep(isCrit ? 720 : 560, 0.09);
+    $('battleEnemyCanvas').classList.add('hit-shake');
+    setTimeout(() => $('battleEnemyCanvas').classList.remove('hit-shake'), 280);
+    logBattle(`${sk.icon} 施放【${sk.name}】造成 ${dmg} 点伤害${extraLog}`);
+
+    // 附加特效
+    if (sk.effect === 'drain') {
+      const drainHp = Math.max(3, Math.floor(dmg * 0.5));
+      battle.player.hp = Math.min(battle.player.maxHp, battle.player.hp + drainHp);
+      logBattle(`💚 汲取能量，恢复了 ${drainHp} HP！`);
+    } else if (sk.effect === 'shield') {
+      battle.player.defending = true;
+      logBattle(`🔰 展开护盾，大幅减免下次伤害！`);
+    } else if (sk.effect === 'heal') {
+      const healHp = Math.max(5, Math.floor(battle.player.maxHp * 0.2));
+      battle.player.hp = Math.min(battle.player.maxHp, battle.player.hp + healHp);
+      logBattle(`🌊 潮汐滋润，恢复了 ${healHp} HP！`);
+    }
+  }
+
+  updateBattleUI();
+  if (battle.enemy.hp <= 0) return winBattle();
+  setTimeout(enemyTurn, 600);
+}
+
+function playerUtilityAction(type) {
+  if (!battle || battle.over) return;
+  renderBattleSkillBar(false);
+  battle.player.defending = false;
+  tickCooldowns();
+
+  if (type === 'defend') {
+    battle.player.defending = true;
+    playBeep(440, 0.07);
+    logBattle('🛡️ 架起防御姿态，大幅减免下一次伤害');
+  } else if (type === 'heal') {
+    playBeep(760, 0.09);
+    if (state.bag.potion && state.bag.potion > 0) {
+      state.bag.potion--;
+      if (state.bag.potion <= 0) delete state.bag.potion;
+      battle.player.hp = Math.min(battle.player.maxHp, battle.player.hp + 30);
+      logBattle(`🧪 使用对战药水，恢复 30 HP（剩余药水 ${state.bag.potion||0}）`);
+    } else {
+      const heal = Math.max(5, Math.floor(battle.player.maxHp * 0.22));
+      battle.player.hp = Math.min(battle.player.maxHp, battle.player.hp + heal);
+      logBattle(`✨ 凝聚自然能量，自我恢复 ${heal} HP`);
+    }
+  }
+
+  updateBattleUI();
+  setTimeout(enemyTurn, 580);
+}
+
+function enemyTurn() {
+  if (!battle || battle.over) return;
+  battle.enemy.defending = false;
+  if (Math.random() < 0.2) {
+    battle.enemy.defending = true;
+    logBattle(`🛡️ 野生 ${battle.enemy.name} 缩起身体进入了防御姿态`);
+  } else {
+    let def = battle.player.def;
+    if (battle.player.defending) def = Math.floor(def * 2.5);
+    let dmg = dmgCalc(battle.enemy.atk, def, 1.0, false);
+    if (battle.player.defending) dmg = Math.max(1, Math.floor(dmg * 0.5));
+    battle.player.hp -= dmg;
+    playBeep(320, 0.08);
+    $('battlePlayerCanvas').classList.add('hit-shake');
+    setTimeout(() => $('battlePlayerCanvas').classList.remove('hit-shake'), 280);
+    logBattle(`💥 野生 ${battle.enemy.name} 反击！造成 ${dmg} 点伤害`);
+  }
+  updateBattleUI();
+  if (battle.player.hp <= 0) return loseBattle();
+  renderBattleSkillBar(true);
+}
+
+function winBattle() {
+  battle.over = true; renderBattleSkillBar(false);
+  const pet = state.pets[battle.playerKey];
+  const expGain = 14 + battle.enemy.lv * 6;
+  const coinGain = 4 + battle.enemy.lv;
+  pet.exp += expGain;
+  state.coins += coinGain;
+  let leveled = false;
+  while (pet.exp >= pet.level * 20) {
+    pet.exp -= pet.level * 20;
+    pet.level++;
+    pet.maxHp += 8; pet.atk += 2; pet.def += 1;
+    pet.hp = pet.maxHp;
+    leveled = true;
+  }
+  if (!leveled) pet.hp = Math.max(1, battle.player.hp);
+
+  const winTask = state.tasks.find(t => t.id === 'win3');
+  if (winTask) winTask.progress++;
+  state.achievements[3].done = true;
+
+  playBeep(940, 0.16);
+  $('battleReward').innerHTML = `🎉 胜利！+${expGain} EXP，+${coinGain}🪙${leveled ? ' ⭐ 宠物升级了！' : ''}`;
+  logBattle('🏆 战斗胜利！');
+  setTimeout(() => showBattleResult(true, expGain, coinGain, leveled), 500);
+  render();
+}
+
+function loseBattle() {
+  battle.over = true; renderBattleSkillBar(false);
+  const pet = state.pets[battle.playerKey];
+  pet.hp = Math.max(1, Math.floor(pet.maxHp * 0.3));
+  state.mood = Math.max(0, state.mood - 15);
+  playBeep(220, 0.18);
+  $('battleReward').textContent = '💀 战败…体力降至 30%，心情 -15';
+  logBattle('💀 体力不支，退出了战斗…');
+  setTimeout(() => showBattleResult(false, 0, 0, false), 500);
+  render();
+}
+
+function showBattleResult(win, exp, coin, leveled) {
+  $('resultTitle').textContent = win ? '竞技场胜利！' : '惜败撤退…';
+  $('resultEmoji').textContent = win ? '🏆' : '🩹';
+  $('resultText').innerHTML = win
+    ? `获得 <b>${exp} EXP</b> 与 <b>${coin}🪙</b>${leveled ? '<br>⭐ 宠物等级提升，全属性增强！' : ''}`
+    : `宠物保留 30% 体力，心情 -15<br>可使用背包中的【像素苹果/小鱼干】恢复体力！`;
+  $('modal-battle-result').classList.add('show');
+}
+
+$('battleResultConfirmBtn').onclick = () => {
+  $('modal-battle-result').classList.remove('show');
+  closePage('battle');
+};
+
+$('btnDefend').onclick = () => playerUtilityAction('defend');
+$('btnHeal').onclick = () => playerUtilityAction('heal');
+
+/* ================= 底部 Tab 切换 & 主舞台触摸爱心气泡特效 ================= */
+function switchTab(view) {
+  playBeep(500, 0.04);
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  if (view === 'map') setTimeout(drawMap, 60);
+}
+document.querySelectorAll('.tab').forEach(tab => tab.onclick = () => switchTab(tab.dataset.view));
+
+const PET_LINES = [
+  '今天也要一起出门走走吗？',
+  '好喜欢和你待在一起呀 ♪',
+  '技能栏准备就绪，随时可以切磋！',
+  '每走 1000 步就能兑换金币哦~',
+  '摸摸头，心情瞬间变好了！'
+];
+let bubbleTimer = null;
+
+$('petCanvas').onclick = () => {
+  state.mood = Math.min(100, state.mood + 3);
+  playBeep(780, 0.06);
+
+  // 飘浮爱心
+  const wrap = $('petWrap');
+  const heart = document.createElement('div');
+  heart.className = 'float-heart';
+  heart.textContent = Math.random() > 0.3 ? '♥' : '♪';
+  heart.style.color = Math.random() > 0.5 ? '#c66f78' : '#e5bd58';
+  heart.style.left = (35 + Math.random() * 30) + '%';
+  heart.style.top = '10px';
+  wrap.appendChild(heart);
+  setTimeout(() => heart.remove(), 1000);
+
+  // 对话气泡
+  const bubble = $('speechBubble');
+  if (bubble) {
+    bubble.textContent = PET_LINES[Math.floor(Math.random() * PET_LINES.length)];
+    bubble.classList.add('show');
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 2200);
+  }
+
+  toast(`${state.pets[state.activePet].name} 开心地蹭了蹭你！心情 +3`);
+  render();
+};
+
+/* ================= 设置页开关与存档重置 ================= */
+$('soundSwitch').onclick = function() {
+  this.classList.toggle('on');
+  soundEnabled = this.classList.contains('on');
+  if (soundEnabled) playBeep(720, 0.08);
+};
+
+$('injectDemoBtn').onclick = () => {
+  injectDemoData();
+  closePage('settings');
+};
+
+$('downloadHtmlBtn').onclick = async () => {
+  try {
+    const response = await fetch(location.href, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const html = await response.text();
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'pixel-pet-standalone.html';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast('HTML 文件已开始下载');
+  } catch (error) {
+    toast('下载失败，请稍后重试');
+  }
+};
+
+$('resetSaveBtn').onclick = () => {
+  localStorage.removeItem(SAVE_KEY);
+  state = DEFAULT_STATE();
+  render();
+  closePage('settings');
+  openPage('splash');
+  toast('已重置为初始默认存档');
+};
+
+/* ================= Toast 提示 & 定时衰减 ================= */
+let toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1900);
+}
+
+setInterval(() => {
+  state.hunger = Math.max(0, state.hunger - 1);
+  state.mood = Math.max(0, state.mood - 1);
+  render();
+}, 30000);
+
+/* ================= 4种背景场景切换 ================= */
+(function(){
+  const stage = document.getElementById('mainStage');
+  document.querySelectorAll('.scene-choice').forEach(btn => btn.addEventListener('click', () => {
+    if (!stage) return;
+    playBeep(580, 0.05);
+    ['coast','room','night','cave'].forEach(k => stage.classList.remove('scene-'+k));
+    stage.classList.add('scene-' + btn.dataset.scene);
+    document.querySelectorAll('.scene-choice').forEach(b => b.classList.toggle('active', b === btn));
+    const labels = { coast:'海岸', room:'卧室', night:'月夜', cave:'洞穴' };
+    const tag = document.getElementById('moodTag');
+    if (tag) tag.textContent = '✦ ' + labels[btn.dataset.scene] + ' · 陪伴中';
+  }));
+})();
+
+/* ================= 初始化启动 ================= */
+loadState();
+render();
+spawnStars();
+generateMap();
+drawTrainScene();
+</script>
+</body>
+</html>
